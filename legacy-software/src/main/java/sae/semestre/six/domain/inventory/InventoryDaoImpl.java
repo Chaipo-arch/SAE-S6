@@ -55,4 +55,9 @@ public class InventoryDaoImpl extends AbstractHibernateDao<Inventory, Long> impl
                 .setParameter("itemCode", itemCode)
                 .executeUpdate();
     }
+
+    @Override
+    public Inventory findByItemCode(String[] itemsCodes) {
+        return null;
+    }
 } 
