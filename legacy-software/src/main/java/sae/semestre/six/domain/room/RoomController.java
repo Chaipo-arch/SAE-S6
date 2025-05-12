@@ -23,21 +23,8 @@ public class RoomController {
         try {
             Room room = roomDao.findByRoomNumber(roomNumber);
             Appointment appointment = appointmentDao.findById(appointmentId);
-            
-            
-            if (room.getType().equals("SURGERY") && 
-                !appointment.getDoctor().getSpecialization().equals("SURGEON")) {
-                return "Error: Only surgeons can use surgery rooms";
-            }
-            
-            
-            if (room.getCurrentPatientCount() >= room.getCapacity()) {
-                return "Error: Room is at full capacity";
-            }
-            
-            
-            room.setCurrentPatientCount(room.getCurrentPatientCount() + 1);
-            appointment.setRoomNumber(roomNumber);
+
+            room.assignAppointment(appointment);
             
             roomDao.update(room);
             appointmentDao.update(appointment);
@@ -50,15 +37,9 @@ public class RoomController {
     
     
     @GetMapping("/availability")
-    public Map<String, Object> getRoomAvailability(@RequestParam String roomNumber) {
+    public RoomAvailabilityInformation getRoomAvailability(@RequestParam String roomNumber) {
         Room room = roomDao.findByRoomNumber(roomNumber);
-        Map<String, Object> result = new HashMap<>();
-        
-        result.put("roomNumber", room.getRoomNumber());
-        result.put("capacity", room.getCapacity());
-        result.put("currentPatients", room.getCurrentPatientCount());
-        result.put("available", room.canAcceptPatient());
-        
-        return result;
+
+        return room.getAvailability();
     }
 } 

@@ -65,6 +65,6 @@ public class PatientHistory {
     public Double getTotalBilledAmount() {
         return bills.stream()
             .mapToDouble(Bill::getTotalAmount)
-            .sum();
+            .sum() *1.2;
     }
 } 
