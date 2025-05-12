@@ -54,6 +54,10 @@ public class Prescription {
         this.id = id;
     }
 
+    public String getPrescriptionNumber() {
+        return prescriptionNumber;
+    }
+
     public void setPrescriptionNumber(String prescriptionNumber) {
         this.prescriptionNumber = prescriptionNumber;
     }
