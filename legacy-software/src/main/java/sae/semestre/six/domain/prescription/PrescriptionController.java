@@ -1,5 +1,8 @@
 package sae.semestre.six.domain.prescription;
 
+import sae.semestre.six.domain.inventory.Inventory;
+import sae.semestre.six.domain.inventory.InventoryController;
+import sae.semestre.six.domain.inventory.InventoryDao;
 import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.billing.BillingService;
@@ -14,12 +17,12 @@ import java.io.*;
 @RestController
 @RequestMapping("/prescriptions")
 public class PrescriptionController {
-    
-    
-    private static final Map<String, List<String>> patientPrescriptions = new HashMap<>();
-    private static final Map<String, Integer> medicineInventory = new HashMap<>();
 
     private final FileHandler fileHandler;
+    @Autowired
+    private InventoryDao inventoryDao;
+    @Autowired
+    InventoryController inventoryController;
     @Autowired
     private BillingService billingService;
     
@@ -29,8 +32,7 @@ public class PrescriptionController {
         put("ANTIBIOTICS", 25.0);
         put("VITAMINS", 15.0);
     }};
-    
-    private static int prescriptionCounter = 0;
+
     private static final String AUDIT_FILE = "C:\\hospital\\prescriptions.log";
     
     
@@ -50,6 +52,19 @@ public class PrescriptionController {
             @RequestParam String[] medicines,
             @RequestParam String notes) {
         try {
+            int prescriptionCounter =prescriptionDao.getNumberOfPrescriptions();
+            Inventory[] inventories = new Inventory[medicines.length];
+            double cost = 0;
+            for(int i = 0; i< medicines.length ; i++) {
+                Inventory inventory = inventoryDao.findByItemCode(medicines[i]);
+
+                if(inventory.needsRestock()) {
+                    // TODO vérifier si le stock doit être non vide.
+                }
+                cost += inventory.getUnitPrice();
+                inventories[i] = inventory;
+
+            }
             prescriptionCounter++;
             String prescriptionId = "RX" + prescriptionCounter;
             
@@ -61,33 +76,22 @@ public class PrescriptionController {
             
             prescription.setMedicines(String.join(",", medicines));
             prescription.setNotes(notes);
-            
-            double cost = calculateCost(prescriptionId);
+
             prescription.setTotalCost(cost);
-            
-            
+
             prescriptionDao.save(prescription);
-            
 
             fileHandler.writeToFile(AUDIT_FILE,
                     new Date().toString() + " - " + prescriptionId + "\n");
-            
-            
-            List<String> currentPrescriptions = patientPrescriptions.getOrDefault(patientId, new ArrayList<>());
-            currentPrescriptions.add(prescriptionId);
-            patientPrescriptions.put(patientId, currentPrescriptions);
-            
             
             billingService.processBill(
                 patientId,
                 "SYSTEM",
                 new String[]{"PRESCRIPTION_" + prescriptionId}
             );
-            
-            
-            for (String medicine : medicines) {
-                int current = medicineInventory.getOrDefault(medicine, 0);
-                medicineInventory.put(medicine, current - 1);
+
+            for (Inventory inventory : inventories) {
+                inventory.setQuantity(inventory.getQuantity() -1);
             }
             
             return "Prescription " + prescriptionId + " created and billed";
@@ -98,40 +102,25 @@ public class PrescriptionController {
     }
     
     @GetMapping("/patient/{patientId}")
-    public List<String> getPatientPrescriptions(@PathVariable String patientId) {
+    public List<Prescription> getPatientPrescriptions(@PathVariable String patientId) {
         
-        return patientPrescriptions.getOrDefault(patientId, new ArrayList<>());
-    }
-    
-    @GetMapping("/inventory")
-    public Map<String, Integer> getInventory() {
-        
-        return medicineInventory;
+        return prescriptionDao.findByPatientId(Long.parseLong(patientId));
     }
     
     @PostMapping("/refill")
     public String refillMedicine(
             @RequestParam String medicine,
             @RequestParam int quantity) {
-        
-        medicineInventory.put(medicine, 
-            medicineInventory.getOrDefault(medicine, 0) + quantity);
+
+        inventoryController.refillStock(medicine,quantity);
         return "Refilled " + medicine;
     }
-    
-    @GetMapping("/cost/{prescriptionId}")
+
     public double calculateCost(@PathVariable String prescriptionId) {
-        
+
         return medicinePrices.values().stream()
-            .mapToDouble(Double::doubleValue)
-            .sum() * 1.2; 
+                .mapToDouble(Double::doubleValue)
+                .sum() * 1.2;
     }
-    
-    
-    @DeleteMapping("/clear")
-    public void clearAllData() {
-        patientPrescriptions.clear();
-        medicineInventory.clear();
-        prescriptionCounter = 0;
-    }
+
 } 

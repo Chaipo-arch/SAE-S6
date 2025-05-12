@@ -82,4 +82,10 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
             delete(entity);
         }
     }
+
+    public int getSize() {
+        return entityManager
+                .createQuery("SELECT COUNT FROM " + persistentClass.getName())
+                .getFirstResult();
+    }
 }

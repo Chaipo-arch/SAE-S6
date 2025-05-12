@@ -15,4 +15,9 @@ public class PrescriptionDaoImpl extends AbstractHibernateDao<Prescription, Long
                 .setParameter("patientId", patientId)
                 .getResultList();
     }
+
+    @Override
+    public int getNumberOfPrescriptions() {
+        return getSize();
+    }
 } 

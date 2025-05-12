@@ -12,4 +12,5 @@ public interface InventoryDao extends GenericDao<Inventory, Long> {
     void updateStock(String itemCode, Integer quantity);
     void updatePrice(String itemCode, Double price);
     List<Inventory> findAll();
+    Inventory findByItemCode(String[] itemsCodes);
 } 

@@ -46,6 +46,9 @@ public class Inventory {
     public String getName() {
         return name;
     }
+
+    /** TODO vérifier si cette méthode doit être ajoutée **/
+    public double getUnitPrice() { return unitPrice; };
     
     public void setName(String name) {
         this.name = name;

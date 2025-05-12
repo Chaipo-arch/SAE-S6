@@ -61,6 +61,12 @@ public class Room {
         return capacity;
     }
 
+    public RoomAvailabilityInformation getAvailability() {
+        return  new RoomAvailabilityInformation(getRoomNumber(),
+                getCapacity(),getCurrentPatientCount(),
+                canAcceptPatient());
+    }
+
     public Set<Appointment> getAppointments() {
         return appointments;
     }
@@ -78,9 +84,27 @@ public class Room {
         
         this.isOccupied = currentPatientCount >= capacity;
     }
+
+    public void assignAppointment(Appointment appointment) {
+        if (canSurgery(appointment)) {
+            throw new RuntimeException("Error: Only surgeons can use surgery rooms");
+        }
+
+        if (getCurrentPatientCount() >= getCapacity()) {
+            throw new RuntimeException("Error: Room is at full capacity");
+        }
+
+        setCurrentPatientCount(getCurrentPatientCount() + 1);
+        appointment.setRoomNumber(roomNumber);
+    }
+
+    public boolean canSurgery(Appointment appointment) {
+        return getType().equals("SURGERY") && !appointment.getDoctor().getSpecialization().equals("SURGEON");
+
+    }
     
     
     public boolean canAcceptPatient() {
         return currentPatientCount < capacity && !isOccupied;
     }
-} 
+}

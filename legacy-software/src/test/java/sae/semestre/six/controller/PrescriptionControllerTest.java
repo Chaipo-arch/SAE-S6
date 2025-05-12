@@ -2,7 +2,9 @@ package sae.semestre.six.controller;
 
 import org.junit.Before;
 import org.junit.Test;
+import sae.semestre.six.domain.prescription.Prescription;
 import sae.semestre.six.domain.prescription.PrescriptionController;
+import sae.semestre.six.file.FileHandler;
 
 import static org.junit.Assert.*;
 import java.util.List;
@@ -13,7 +15,7 @@ public class PrescriptionControllerTest {
     
     @Before
     public void setUp() {
-        prescriptionController = new PrescriptionController();
+        prescriptionController = new PrescriptionController(new FileHandler());
     }
     
     
@@ -27,11 +29,11 @@ public class PrescriptionControllerTest {
         
         assertTrue(result.contains("created"));
         
-        List<String> prescriptions = prescriptionController.getPatientPrescriptions("PAT001");
+        List<Prescription> prescriptions = prescriptionController.getPatientPrescriptions("PAT001");
         assertFalse(prescriptions.isEmpty());
         
         
-        assertTrue(prescriptions.get(0).startsWith("RX"));
+        assertTrue(prescriptions.get(0).getPrescriptionNumber().startsWith("RX"));
     }
     
     

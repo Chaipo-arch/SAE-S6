@@ -81,4 +81,18 @@ public class InventoryController {
         
         return "Reorder requests sent for " + lowStockItems.size() + " items";
     }
+
+    @PostMapping("/refill")
+    public String refillStock(
+            @RequestParam String stock,
+            @RequestParam int quantity) {
+
+        Inventory inventory = inventoryDao.findByItemCode(stock);
+        inventory.setQuantity(quantity+ inventory.getQuantity());
+        return "Refilled " + stock;
+    }
+
+    public List<Inventory> getAllInventory() {
+        return inventoryDao.findAll();
+    }
 } 

@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.billing;
 
+import org.hibernate.Hibernate;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.history.PatientHistory;
@@ -7,6 +8,7 @@ import sae.semestre.six.domain.patient.history.PatientHistory;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -78,4 +80,31 @@ public class Bill {
     
     public Set<BillDetail> getBillDetails() { return billDetails; }
     public void setBillDetails(Set<BillDetail> billDetails) { this.billDetails = billDetails; }
+
+    public void calculateCost(Map<String, Double> priceList, String[] treatments) {
+        double total = 0.0;
+        Set<BillDetail> details = new HashSet<>();
+
+        for (String treatment : treatments) {
+            double price = priceList.get(treatment);
+            total += price;
+
+            BillDetail detail = new BillDetail();
+            detail.setBill(this);
+            detail.setTreatmentName(treatment);
+            detail.setUnitPrice(price);
+            details.add(detail);
+
+            //Hibernate.initialize(detail); //TODO : vérifier utilité
+        }
+
+        if (total > 500) {
+            total = total * 0.9;
+        }
+
+        this.setTotalAmount(total);
+        this.setBillDetails(details);
+    }
+
+
 } 

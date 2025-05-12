@@ -22,24 +22,17 @@ public class PatientHistoryController {
         
         List<PatientHistory> results = patientHistoryDao.searchByMultipleCriteria(
             keyword, startDate, endDate);
-            
+
         return results;
     }
     
     
     @GetMapping("/patient/{patientId}/summary")
-    public Map<String, Object> getPatientSummary(@PathVariable Long patientId) {
+    public PatientSummary getPatientSummary(@PathVariable Long patientId) {
         List<PatientHistory> histories = patientHistoryDao.findCompleteHistoryByPatientId(patientId);
-        
-        Map<String, Object> summary = new HashMap<>();
-        summary.put("visitCount", histories.size());
-        
-        
-        double totalBilled = histories.stream()
-            .mapToDouble(PatientHistory::getTotalBilledAmount)
-            .sum();
-            
-        summary.put("totalBilled", totalBilled);
-        return summary;
+
+        return new PatientSummary(histories.size(),histories.stream()
+                .mapToDouble(PatientHistory::getTotalBilledAmount)
+                .sum());
     }
 } 
