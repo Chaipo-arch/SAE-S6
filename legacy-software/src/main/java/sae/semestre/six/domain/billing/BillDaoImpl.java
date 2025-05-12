@@ -52,4 +52,13 @@ public class BillDaoImpl extends AbstractHibernateDao<Bill, Long> implements Bil
                 .setParameter("status", status)
                 .getResultList();
     }
+
+    @Override
+    public double getTotalCost() {
+        double total = 0;
+        for(Bill bill : findAll()) {
+            total += bill.getTotalAmount();
+        }
+        return total;
+    }
 } 
