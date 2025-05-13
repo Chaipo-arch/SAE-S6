@@ -1,15 +1,14 @@
 package sae.semestre.six.domain.patient.history;
 
+import jakarta.persistence.TypedQuery;
 import sae.semestre.six.dao.AbstractHibernateDao;
 import org.springframework.stereotype.Repository;
-import jakarta.persistence.Query;
 import java.util.*;
 
 @Repository
 public class PatientHistoryDaoImpl extends AbstractHibernateDao<PatientHistory, Long> implements PatientHistoryDao {
     
     @Override
-    @SuppressWarnings("unchecked")
     public List<PatientHistory> findCompleteHistoryByPatientId(Long patientId) {
         
         return getEntityManager()
@@ -21,13 +20,12 @@ public class PatientHistoryDaoImpl extends AbstractHibernateDao<PatientHistory, 
                 "JOIN ph.bills b " +
                 "JOIN ph.labResults lr " +
                 "WHERE p.id = :patientId " +
-                "ORDER BY ph.visitDate DESC")
+                "ORDER BY ph.visitDate DESC",PatientHistory.class)
             .setParameter("patientId", patientId)
             .getResultList();
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public List<PatientHistory> searchByMultipleCriteria(String keyword, Date startDate, Date endDate) {
         
         String sql = "SELECT ph FROM PatientHistory ph " +
@@ -38,11 +36,10 @@ public class PatientHistoryDaoImpl extends AbstractHibernateDao<PatientHistory, 
             "OR EXISTS (SELECT 1 FROM ph.prescriptions p WHERE LOWER(p.medication) LIKE :keyword)) " +
             "AND ph.visitDate BETWEEN :startDate AND :endDate";
             
-        Query query = getEntityManager().createQuery(sql);
+        TypedQuery<PatientHistory> query = getEntityManager().createQuery(sql,PatientHistory.class);
         query.setParameter("keyword", "%" + keyword.toLowerCase() + "%");
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        
         
         return query.getResultList();
     }

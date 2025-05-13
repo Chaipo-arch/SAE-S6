@@ -57,6 +57,7 @@ public class Insurance {
         this.maxCoverage = maxCoverage;
     }
 
+
     public Double calculateCoverage(Double billAmount) {
         Double coverage = billAmount * (coveragePercentage / 100);
         return coverage > maxCoverage ? maxCoverage : coverage;
