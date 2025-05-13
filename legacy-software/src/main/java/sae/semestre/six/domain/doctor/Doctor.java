@@ -49,7 +49,39 @@ public class Doctor {
     public void setId(Long id) {
         this.id = id;
     }
+    public String getDoctorNumber() {
+        return doctorNumber;
+    }
 
+    public void setDoctorNumber(String doctorNumber) {
+        this.doctorNumber = doctorNumber;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+    public void setSpecialization(String specialization) {
+        this.specialization = specialization;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
     public String getSpecialization() {
         return specialization;
     }
