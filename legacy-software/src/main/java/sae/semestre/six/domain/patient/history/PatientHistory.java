@@ -17,7 +17,7 @@ public class PatientHistory {
     private Long id;
     
     @ManyToOne(fetch = FetchType.EAGER) 
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id",nullable = false)
     private Patient patient;
     
     @OneToMany(mappedBy = "patientHistory", fetch = FetchType.EAGER) 

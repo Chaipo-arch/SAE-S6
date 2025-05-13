@@ -12,7 +12,7 @@ public class LabResult {
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "patient_history_id")
+    @JoinColumn(name = "patient_history_id",nullable = false)
     private PatientHistory patientHistory;
     
     @Column(name = "test_name")

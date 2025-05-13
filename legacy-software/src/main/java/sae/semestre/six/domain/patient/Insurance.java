@@ -19,23 +19,23 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "policy_number", unique = true)
+    @Column(name = "policy_number", unique = true,  nullable = false)
     private String policyNumber;
     
     @ManyToOne
-    @JoinColumn(name = "patient_id")
+    @JoinColumn(name = "patient_id",nullable = false)
     private Patient patient;
     
-    @Column(name = "provider")
+    @Column(name = "provider", nullable = false)
     private String provider;
     
-    @Column(name = "coverage_percentage")
+    @Column(name = "coverage_percentage",nullable = false)
     private Double coveragePercentage;
     
-    @Column(name = "max_coverage")
+    @Column(name = "max_coverage", nullable = false)
     private Double maxCoverage;
     
-    @Column(name = "expiry_date")
+    @Column(name = "expiry_date", nullable = false)
     @Temporal(TemporalType.DATE)
     private Date expiryDate;
 

@@ -11,7 +11,7 @@ import java.util.Set;
 @Table(name = "patients")
 public class Patient {
 
-    private static final String PHONE_NUMBER_PATTERN = "??";
+    private static final String PHONE_NUMBER_PATTERN = "^0\\d{9}$";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
