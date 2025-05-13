@@ -94,4 +94,18 @@ public class Appointment {
     public void setRoomNumber(String roomNumber) {
         this.roomNumber = roomNumber;
     }
+
+
+    public void setAppointmentDate(LocalDateTime appointmentDate) {
+        this.appointmentDate = appointmentDate;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 } 
