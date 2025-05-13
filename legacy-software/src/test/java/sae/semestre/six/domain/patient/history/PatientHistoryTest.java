@@ -14,8 +14,8 @@ public class PatientHistoryTest {
 
         Bill b1 = new Bill(); b1.setTotalAmount(100.0);
         Bill b2 = new Bill(); b2.setTotalAmount(200.0);
-        history.getBills().add(b1);
-        history.getBills().add(b2);
+        history.addBill(b1);
+        history.addBill(b2);
 
         double expectedTotal = (100.0 + 200.0);
         assertEquals(expectedTotal, history.getTotalBilledAmount(), 0.001);
@@ -32,9 +32,9 @@ public class PatientHistoryTest {
         Bill b3 = new Bill();
         b3.setBillDate(dateFrom("2023-12-31"));
 
-        history.getBills().add(b1);
-        history.getBills().add(b2);
-        history.getBills().add(b3);
+        history.addBill(b1);
+        history.addBill(b2);
+        history.addBill(b3);
 
         List<Bill> sorted = history.getBillsSorted();
         assertEquals(b2, sorted.get(0));

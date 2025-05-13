@@ -1,5 +1,8 @@
 package sae.semestre.six.domain.patient;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
@@ -9,6 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "patients")
+@AllArgsConstructor
+@Builder
 public class Patient {
 
     private static final String PHONE_NUMBER_PATTERN = "^0\\d{9}$";
@@ -61,22 +66,6 @@ public class Patient {
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public Set<Appointment> getAppointments() {
-        return appointments;
     }
 
     private boolean isExistingGender(String gender) {
