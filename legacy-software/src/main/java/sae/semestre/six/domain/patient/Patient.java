@@ -11,6 +11,7 @@ import java.util.Set;
 @Table(name = "patients")
 public class Patient {
 
+    private static final String PHONE_NUMBER_PATTERN = "??";
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -44,7 +45,20 @@ public class Patient {
     public Patient() {
     }
 
-    
+    public void setGender(String gender) {
+        if(!isExistingGender(gender)) {
+            throw new RuntimeException("Veuillez choisir un sexe entre H ou F.");
+        }
+        this.gender = gender;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        if(!isCorrectPhoneNumber(phoneNumber)) {
+            throw new RuntimeException("Le numéro de téléphone n'est pas correcte.");
+        }
+        this.phoneNumber = phoneNumber;
+    }
+
     public Long getId() {
         return id;
     }
@@ -63,5 +77,14 @@ public class Patient {
 
     public Set<Appointment> getAppointments() {
         return appointments;
+    }
+
+    private boolean isExistingGender(String gender) {
+        return gender.equals("F") || gender.equals("H") ;
+
+    }
+
+    private boolean isCorrectPhoneNumber(String phoneNumber) {
+        return phoneNumber.matches(phoneNumber);
     }
 } 

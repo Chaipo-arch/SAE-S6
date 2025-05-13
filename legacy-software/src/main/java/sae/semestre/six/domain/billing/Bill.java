@@ -60,6 +60,10 @@ public class Bill {
     
     public String getBillNumber() { return billNumber; }
 
+    public void setBillDate(Date billDate) {
+        this.billDate = billDate;
+    }
+
     public void setBillNumber(String billNumber) { this.billNumber = billNumber; }
     
     public Patient getPatient() { return patient; }

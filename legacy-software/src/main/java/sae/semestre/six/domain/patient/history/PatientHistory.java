@@ -53,7 +53,11 @@ public class PatientHistory {
         
         return new TreeSet<>(appointments);
     }
-    
+
+    public Set<Bill> getBills() {
+        return bills;
+    }
+
     public List<Bill> getBillsSorted() {
         
         List<Bill> sortedBills = new ArrayList<>(bills);
@@ -65,6 +69,6 @@ public class PatientHistory {
     public Double getTotalBilledAmount() {
         return bills.stream()
             .mapToDouble(Bill::getTotalAmount)
-            .sum() *1.2;
+            .sum();
     }
 } 
