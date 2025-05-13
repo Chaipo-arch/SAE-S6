@@ -81,6 +81,10 @@ public class Patient {
     private static boolean isCorrectPhoneNumber(String phoneNumber) {
         return phoneNumber.matches(phoneNumber);
     }
+
+    /**
+     * https://www.baeldung.com/lombok-builder-custom-setter
+     */
     public static class PatientBuilder {
 
         private String phoneNumber;
