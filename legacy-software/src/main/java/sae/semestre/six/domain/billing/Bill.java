@@ -118,6 +118,6 @@ public class Bill {
 
 
     public void setPatientHistory(PatientHistory patientHistory) {
-        patientHistory = patientHistory;
+        this.patientHistory = patientHistory;
     }
 }

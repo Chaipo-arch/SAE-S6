@@ -13,10 +13,15 @@ import java.util.Set;
 @Entity
 @Table(name = "patients")
 @AllArgsConstructor
-@Builder
+@Builder(builderClassName = "PatientBuilder")
+/**
+ * Une entité patient.
+ *
+ */
 public class Patient {
 
     private static final String PHONE_NUMBER_PATTERN = "^0\\d{9}$";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -68,12 +73,35 @@ public class Patient {
         return id;
     }
 
-    private boolean isExistingGender(String gender) {
+    private static boolean isExistingGender(String gender) {
         return gender.equals("F") || gender.equals("H") ;
 
     }
 
-    private boolean isCorrectPhoneNumber(String phoneNumber) {
+    private static boolean isCorrectPhoneNumber(String phoneNumber) {
         return phoneNumber.matches(phoneNumber);
+    }
+    public static class PatientBuilder {
+
+        private String phoneNumber;
+
+        private String gender;
+
+        public PatientBuilder phoneNumber(String phoneNumber) {
+            if(!isCorrectPhoneNumber(phoneNumber)) {
+                throw new RuntimeException("Le numéro de téléphone n'est pas correcte.");
+            }
+            this.phoneNumber = phoneNumber;
+            return this;
+        }
+
+        public PatientBuilder gender(String gender) {
+            if (!isExistingGender(gender)) {
+                throw new IllegalArgumentException("Le genre doit être H ou F.");
+            }
+            this.phoneNumber = phoneNumber;
+            return this;
+        }
+
     }
 } 
