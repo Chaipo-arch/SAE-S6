@@ -105,4 +105,50 @@ public class DoctorDaoImplTest {
         verify(entityManager).createQuery(contains("specialization"), eq(Doctor.class));
         verify(query).setParameter("specialization", "Cardio");
     }
+
+    @Test
+    @DisplayName("findByDepartment doit retourner tous les docteurs du département donné")
+    void whenFindByDepartment_thenReturnList() {
+        // Préparation
+        Doctor d1 = new Doctor();
+        d1.setDoctorNumber("X1");
+        d1.setDepartment("Cardiology");
+
+        Doctor d2 = new Doctor();
+        d2.setDoctorNumber("X2");
+        d2.setDepartment("Cardiology");
+
+        List<Doctor> doctors = Arrays.asList(d1, d2);
+
+        when(query.setParameter(anyString(), anyString())).thenReturn(query);
+        when(query.getResultList()).thenReturn(doctors);
+
+        // Exécution
+        List<Doctor> result = doctorDao.findByDepartment("Cardiology");
+
+        // Vérification
+        assertEquals(2, result.size());
+        assertTrue(result.stream().anyMatch(d -> "X1".equals(d.getDoctorNumber())));
+        assertTrue(result.stream().anyMatch(d -> "X2".equals(d.getDoctorNumber())));
+
+        verify(entityManager).createQuery(contains("department"), eq(Doctor.class));
+        verify(query).setParameter("department", "Cardiology");
+    }
+
+    @Test
+    @DisplayName("findByDepartment doit retourner une liste vide quand aucun docteur dans le département")
+    void whenFindByDepartmentWithNoDoctors_thenReturnEmptyList() {
+        // Préparation
+        when(query.setParameter(anyString(), anyString())).thenReturn(query);
+
+        // Exécution
+        List<Doctor> result = doctorDao.findByDepartment("UnknownDept");
+
+        // Vérification
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+
+        verify(entityManager).createQuery(contains("department"), eq(Doctor.class));
+        verify(query).setParameter("department", "UnknownDept");
+    }
 }

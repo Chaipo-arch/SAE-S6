@@ -97,4 +97,16 @@ public class Doctor {
     public void setAppointments(Set<Appointment> appointments) {
         this.appointments = appointments;
     }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
 } 
