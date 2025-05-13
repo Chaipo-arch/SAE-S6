@@ -35,6 +35,7 @@ class SchedulingControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        // No manual instantiation: Mockito will inject mocks into controller
     }
 
     @Test
@@ -45,11 +46,11 @@ class SchedulingControllerTest {
         LocalDateTime targetDate = LocalDateTime.of(2025, 5, 13, 15, 0);
 
         Doctor doctor = new Doctor();
+        doctor.setEmail("doctor@example.com");
         when(doctorDao.findById(doctorId)).thenReturn(doctor);
 
         Appointment existingAppointment = new Appointment();
         existingAppointment.setAppointmentDate(targetDate);
-
         when(appointmentDao.findByDoctorId(doctorId))
                 .thenReturn(List.of(existingAppointment));
 
@@ -68,13 +69,12 @@ class SchedulingControllerTest {
 
         Appointment appointment = new Appointment();
         appointment.setAppointmentDate(occupiedSlot);
-
         when(appointmentDao.findByDoctorId(doctorId))
                 .thenReturn(List.of(appointment));
 
         List<LocalDateTime> availableSlots = controller.getAvailableSlots(doctorId, date);
 
-        assertEquals(8, availableSlots.size()); // De 9 à 17, sauf 10h.
+        assertEquals(8, availableSlots.size()); // De 9 à 17, sauf 10h
         assertEquals(LocalDateTime.of(date, LocalTime.of(9, 0)), availableSlots.get(0));
         assertEquals(LocalDateTime.of(date, LocalTime.of(11, 0)), availableSlots.get(1));
         verify(appointmentDao).findByDoctorId(doctorId);
