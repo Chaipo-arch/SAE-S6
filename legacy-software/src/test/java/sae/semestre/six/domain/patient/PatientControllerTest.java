@@ -21,6 +21,7 @@ import java.util.Date;
 @AutoConfigureMockMvc
 public class PatientControllerTest {
 
+    public final Patient PATIENT = Patient.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").lastName("C").gender("H").build();
 
     @Autowired
     MockMvc mockMvc ;

@@ -8,6 +8,8 @@ import java.util.Date;
 
 public class InsuranceTest {
 
+    public final Insurance INSURANCE = Insurance.builder().expiryDate(addDaysToDate(new Date(), 10)).maxCoverage(200.0).coveragePercentage(90.0).policyNumber("Policy").build();
+
     @Test
     public void testCalculateCoverageUnderMaxCoverage() {
         Insurance insurance = createInsurance(80.0, 1000.0);
@@ -42,33 +44,27 @@ public class InsuranceTest {
 
     @Test
     public void testCalculateCoverage_ExceedsMaxCoverage() {
-        Insurance insurance = createInsurance(90.0, 200.0);
         Double bill = 500.0;
         // 500 * 90% = 450 > max 200
-        assertEquals(200.0, insurance.calculateCoverage(bill));
+        assertEquals(200.0, INSURANCE.calculateCoverage(bill));
     }
 
     @Test
     public void testIsValid_True() {
-        Insurance insurance = new Insurance();
-        insurance.setExpiryDate(addDaysToDate(new Date(), 10));
-
-        assertTrue(insurance.isValid(), "L'assurance devrait être valide dans le futur");
+        assertTrue(INSURANCE.isValid(), "L'assurance devrait être valide dans le futur");
     }
 
     @Test
     public void testIsValid_False() {
-        Insurance insurance = new Insurance();
-        insurance.setExpiryDate(addDaysToDate(new Date(), -5));
+        Insurance insurance = Insurance.builder().expiryDate(addDaysToDate(new Date(), -5)).maxCoverage(200.0).coveragePercentage(90.0).policyNumber("Policy").build();
+
 
         assertFalse(insurance.isValid(), "L'assurance expirée ne devrait pas être valide");
     }
 
     // Méthodes utilitaires
     private Insurance createInsurance(Double coveragePercentage, Double maxCoverage) {
-        Insurance insurance = new Insurance();
-        insurance.setCoveragePercentage(coveragePercentage);
-        insurance.setMaxCoverage(maxCoverage);
+        Insurance insurance =  Insurance.builder().expiryDate(new Date()).maxCoverage(maxCoverage).coveragePercentage(coveragePercentage).policyNumber("dsfgh").build();
         return insurance;
     }
 

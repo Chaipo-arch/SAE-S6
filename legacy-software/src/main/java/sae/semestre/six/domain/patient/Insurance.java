@@ -1,10 +1,14 @@
 package sae.semestre.six.domain.patient;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+import sae.semestre.six.exception.InvalidDataException;
+
 import java.util.Date;
 
 @Entity
 @Table(name = "insurance")
+@Builder(builderClassName = "InsuranceBuilder")
 /**
  * Une assurance pour un patient.
  * Une assurance à une couverture et une couverture maximale.
@@ -39,25 +43,6 @@ public class Insurance {
     @Temporal(TemporalType.DATE)
     private Date expiryDate;
 
-    public void setCoveragePercentage(Double coveragePercentage) {
-        if(coveragePercentage < 0) {
-            throw  new RuntimeException("Une assurance ne peut pas avoir une couverture négative.");
-        }
-        this.coveragePercentage = coveragePercentage;
-    }
-
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public void setMaxCoverage(Double maxCoverage) {
-        if(maxCoverage < 0) {
-            throw  new RuntimeException("Une assurance ne peut pas avoir une couverture négative.");
-        }
-        this.maxCoverage = maxCoverage;
-    }
-
-
     public Double calculateCoverage(Double billAmount) {
         Double coverage = billAmount * (coveragePercentage / 100);
         return coverage > maxCoverage ? maxCoverage : coverage;
@@ -67,4 +52,51 @@ public class Insurance {
     public boolean isValid() {
         return new Date().before(expiryDate);
     }
+
+    public static class InsuranceBuilder {
+        private Double maxCoverage;
+
+        private Double coveragePercentage;
+        private String policyNumber;
+        private Date expiryDate;
+
+        public  InsuranceBuilder maxCoverage(Double maxCoverage) {
+            if(maxCoverage == null) {
+                throw  new InvalidDataException("La couverture maximale ne peut pas être vide.");
+            }
+            if(maxCoverage < 0) {
+                throw  new InvalidDataException("Une assurance ne peut pas avoir une couverture négative.");
+            }
+            this.maxCoverage = maxCoverage;
+            return this;
+        }
+
+        public InsuranceBuilder coveragePercentage(Double coveragePercentage) {
+            if(coveragePercentage == null) {
+                throw  new InvalidDataException("La couverture en pourcentage ne peut pas être vide.");
+            }
+            if(coveragePercentage < 0) {
+                throw  new InvalidDataException("Une assurance ne peut pas avoir une couverture négative.");
+            }
+            this.coveragePercentage = coveragePercentage;
+            return this;
+        }
+
+        public InsuranceBuilder policyNumber(String policyNumber) {
+            if(policyNumber == null) {
+                throw  new InvalidDataException("Le numéro de l'assurance ne peut être vide.");
+            }
+            this.policyNumber = policyNumber;
+            return this;
+        }
+
+        public InsuranceBuilder expiryDate(Date date) {
+            if(date == null) {
+                throw  new InvalidDataException("La date d'expiration ne peut être vide.");
+            }
+            this.expiryDate = date;
+            return this;
+        }
+    }
+
 } 
