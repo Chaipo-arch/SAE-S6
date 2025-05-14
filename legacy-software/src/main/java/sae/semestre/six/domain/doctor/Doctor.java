@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.doctor;
 
+import jakarta.validation.constraints.NotBlank;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
@@ -13,12 +14,15 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Le numéro du docteur est obligatoire")
     @Column(name = "doctor_number", unique = true, nullable = false)
     private String doctorNumber;
 
+    @NotBlank(message = "Le prénom est obligatoire")
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @NotBlank(message = "Le nom est obligatoire")
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
