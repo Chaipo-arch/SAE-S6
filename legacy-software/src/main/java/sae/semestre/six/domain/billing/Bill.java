@@ -1,6 +1,7 @@
 package sae.semestre.six.domain.billing;
 
-import org.hibernate.Hibernate;
+import lombok.Getter;
+import lombok.Setter;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.history.PatientHistory;
@@ -12,35 +13,51 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
+/**
+ * Représente une facture
+ */
 @Entity
 @Table(name = "bills")
 public class Bill {
-    
+
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    @Getter
+    @Setter
     @Column(name = "bill_number", unique = true)
     private String billNumber;
-    
+
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
-    
+
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
-    
+
+    @Getter
     @Column(name = "bill_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date billDate = new Date();
-    
+
+    @Getter
+    @Setter
     @Column(name = "total_amount")
     private Double totalAmount = 0.0;
     
     @Column(name = "status")
     private String status = "PENDING";
-    
+
+    @Getter
+    @Setter
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<BillDetail> billDetails = new HashSet<>();
     
@@ -53,35 +70,20 @@ public class Bill {
 
     @ManyToOne
     private PatientHistory patientHistory;
-    
-    
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getBillNumber() { return billNumber; }
 
-    public void setBillNumber(String billNumber) { this.billNumber = billNumber; }
-    
-    public Patient getPatient() { return patient; }
-    public void setPatient(Patient patient) { this.patient = patient; }
-    
-    public Doctor getDoctor() { return doctor; }
-    public void setDoctor(Doctor doctor) { this.doctor = doctor; }
-    
-    public Date getBillDate() { return billDate; }
-
-    public Double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
-    
     public void setStatus(String status) {
         this.status = status;
         this.lastModified = new Date(); 
     }
-    
-    public Set<BillDetail> getBillDetails() { return billDetails; }
-    public void setBillDetails(Set<BillDetail> billDetails) { this.billDetails = billDetails; }
 
+    /**
+     * Modifie les détails de la facture et son coût total, en le calculant grâce à la liste des prix et les liste
+     * des traitements associés passé en argument
+     * @param priceList la liste des prix des traitements
+     * @param treatments les traitements
+     */
     public void calculateCost(Map<String, Double> priceList, String[] treatments) {
+        final double TAUX_REDUCTION = 0.9;
         double total = 0.0;
         Set<BillDetail> details = new HashSet<>();
 
@@ -99,7 +101,7 @@ public class Bill {
         }
 
         if (total > 500) {
-            total = total * 0.9;
+            total = total * TAUX_REDUCTION;
         }
 
         this.setTotalAmount(total);
