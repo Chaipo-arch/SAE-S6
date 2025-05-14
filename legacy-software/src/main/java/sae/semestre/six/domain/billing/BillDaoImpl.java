@@ -46,7 +46,7 @@ public class BillDaoImpl extends AbstractHibernateDao<Bill, Long> implements Bil
     
     @Override
     @SuppressWarnings("unchecked")
-    public List<Bill> findByStatus(String status) {
+    public List<Bill> findByStatus(BillStatus status) {
         return getEntityManager()
                 .createQuery("FROM Bill WHERE status = :status")
                 .setParameter("status", status)

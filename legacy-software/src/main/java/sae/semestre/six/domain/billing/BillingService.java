@@ -131,7 +131,7 @@ public class BillingService {
      * @param billId l'identifiant de la facture
      * @param status le statut à appliquer sur la facture
      */
-    private void updateBill(String billId, String status, String[] types) {
+    private void updateBill(String billId, BillStatus status, String[] types) {
         Bill bill = billDao.findById(Long.valueOf(billId));
         bill.setStatus(status);
         billDao.update(bill);
@@ -155,12 +155,12 @@ public class BillingService {
      */
     private void recalculateAllPendingBills() {
         for (String billId : getPendingBillsIds()) {
-            updateBill(billId, "RECALC", new String[]{"CONSULTATION"});
+            updateBill(billId, BillStatus.RECALC, new String[]{"CONSULTATION"});
         }
     }
 
     List<String> getPendingBillsIds() {
-        return billDao.findByStatus("PENDING")
+        return billDao.findByStatus(BillStatus.PENDING)
                 .stream()
                 .map(b -> b.getId().toString())
                 .toList();
