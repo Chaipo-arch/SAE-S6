@@ -83,6 +83,14 @@ public class Appointment {
         return appointmentDate;
     }
 
+    public String getAppointmentNumber() {
+        return appointmentNumber;
+    }
+
+    public void setAppointmentNumber(String appointmentNumber) {
+        this.appointmentNumber = appointmentNumber;
+    }
+
     public String getDescription() {
         return description;
     }

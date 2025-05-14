@@ -4,6 +4,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import sae.semestre.six.domain.doctor.DoctorDao;
 import sae.semestre.six.domain.doctor.Doctor;
+import sae.semestre.six.domain.patient.Patient;
+import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.mail.EmailService;
 
 import java.time.LocalDate;
@@ -19,14 +21,16 @@ public class SchedulingController {
 
     private final AppointmentDao appointmentDao;
     private final DoctorDao doctorDao;
+    private final PatientDao patientDao;
     private final EmailService emailService;
 
     public SchedulingController(
             AppointmentDao appointmentDao,
-            DoctorDao doctorDao,
+            DoctorDao doctorDao, PatientDao patientDao,
             EmailService emailService) {
         this.appointmentDao = appointmentDao;
         this.doctorDao = doctorDao;
+        this.patientDao = patientDao;
         this.emailService = emailService;
     }
 
@@ -38,6 +42,7 @@ public class SchedulingController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentDateTime) {
         // Vérifier la disponibilité du docteur
         Doctor doctor = doctorDao.findById(doctorId);
+        Patient patient = patientDao.findById(patientId);
         List<Appointment> doctorAppointments = appointmentDao.findByDoctorId(doctorId);
         boolean conflict = doctorAppointments.stream()
                 .anyMatch(existing -> existing.getAppointmentDate().equals(appointmentDateTime));
@@ -50,6 +55,13 @@ public class SchedulingController {
             return "Appointments only available between 9 AM and 5 PM";
         }
 
+        Appointment appointment = new Appointment();
+        appointment.setAppointmentDate(appointmentDateTime);
+        appointment.setDoctor(doctor);
+        appointment.setPatient(patient);
+        appointment.setAppointmentNumber(appointment.getId()+""+appointment.getDoctor().getId());
+        appointment.setStatus("SCHEDULED");
+        appointmentDao.save(appointment);
         // Envoyer un email de confirmation
         emailService.sendEmail(
                 doctor.getEmail(),
