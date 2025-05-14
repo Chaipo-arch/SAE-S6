@@ -2,6 +2,8 @@ package sae.semestre.six.domain.billing;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sae.semestre.six.domain.doctor.Doctor;
@@ -28,7 +30,8 @@ public class BillingService {
             "SURGERY", 1000.0);
 
     @Getter
-    private final String BILLS_FILEPATH = "C:\\hospital\\billing.txt";
+    @Value("${sae.semestre.six.files.billing}")
+    private String BILLS_FILEPATH;
 
     private final PatientDao patientDao;
     private final FileHandler fileHandler;
@@ -46,6 +49,7 @@ public class BillingService {
      */
     @Transactional
     public String processBill(String patientId, String doctorId, String[] treatments) {
+
         try {
             Patient patient = patientDao.findById(Long.parseLong(patientId));
             Doctor doctor = doctorDao.findById(Long.parseLong(doctorId));
@@ -58,7 +62,10 @@ public class BillingService {
             bill.setDoctor(doctor);
 
             bill.calculateCost(priceList, treatments);
-            writeBillToFile(bill);
+
+            String message = getBillDetailsForLogging(bill, Long.parseLong(patientId), Long.parseLong(doctorId), treatments);
+            fileHandler.writeToFile(BILLS_FILEPATH, message);
+
 
             billDao.save(bill);
 
@@ -71,13 +78,37 @@ public class BillingService {
     }
 
     /**
-     * Ajoute l'information de la facture dans le fichier
-     *
+     * Construit le message décrivant la nouvelle facture
      * @param bill la facture
+     * @param patientId l'identifiant du patient
+     * @param doctorId l'identifiant du docteur
+     * @param treatments les traitements sur la facture
      */
-    private void writeBillToFile(Bill bill) {
-        String textToAdd = bill.getBillNumber() + ": $" + bill.getTotalAmount() + "\n";
-        fileHandler.writeToFile(BILLS_FILEPATH, textToAdd);
+    private String getBillDetailsForLogging(@NonNull Bill bill,
+                                            @NonNull Long patientId,
+                                            @NonNull Long doctorId,
+                                            @NonNull String[] treatments) {
+        if (bill.getBillNumber() == null) {
+            throw new IllegalStateException("Bill number is null");
+        }
+
+        double total = 0.0;
+
+        String billDetails = "Bill Number: " + bill.getBillNumber() + "\n";
+        billDetails += "Patient: " + patientId + "\n";
+        billDetails += "Doctor: " + doctorId + "\n";
+
+
+        StringBuilder billDetailsBuilder = new StringBuilder(billDetails);
+        for (String treatment : treatments) {
+            double price = priceList.get(treatment);
+            billDetailsBuilder.append(treatment).append(": $").append(price).append("\n");
+        }
+        billDetails = billDetailsBuilder.toString();
+
+
+        billDetails += "Total: $" + total + "\n\n";
+        return billDetails;
     }
 
     /**
