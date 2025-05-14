@@ -1,5 +1,7 @@
 package sae.semestre.six.domain.appointment;
 
+import lombok.Getter;
+import lombok.Setter;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.history.PatientHistory;
@@ -14,17 +16,24 @@ import java.time.LocalDateTime;
 @Table(name = "appointments")
 public class Appointment {
 
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(name = "appointment_number", unique = true, nullable = false)
     private String appointmentNumber;
 
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
@@ -35,17 +44,21 @@ public class Appointment {
     @ManyToOne
     private PatientHistory patientHistory;
 
+    @Setter
+    @Getter
     @Column(name = "appointment_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime appointmentDate;
 
 
+    @Setter
     @Column(name = "status")
     private String status;
 
     @Column(name = "description")
     private String description;
 
+    @Setter
     @Column(name = "room_number")
     private String roomNumber;
 
@@ -53,42 +66,9 @@ public class Appointment {
     public Appointment() {
     }
 
-    
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public Doctor getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(Doctor doctor) {
-        this.doctor = doctor;
-    }
-
-    public LocalDateTime
-    getAppointmentDate() {
-        return appointmentDate;
-    }
 
     public String getAppointmentNumber() {
         return appointmentNumber;
-    }
-
-    public void setAppointmentNumber(String appointmentNumber) {
-        this.appointmentNumber = appointmentNumber;
     }
 
     public String getDescription() {
@@ -99,21 +79,9 @@ public class Appointment {
         this.description = description;
     }
 
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
-    }
-
-
-    public void setAppointmentDate(LocalDateTime appointmentDate) {
-        this.appointmentDate = appointmentDate;
-    }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-} 
+}

@@ -1,11 +1,15 @@
 package sae.semestre.six.domain.doctor;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "doctors")
 public class Doctor {
@@ -45,72 +49,5 @@ public class Doctor {
     public Doctor() {
     }
 
-    
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getDoctorNumber() {
-        return doctorNumber;
-    }
-
-    public void setDoctorNumber(String doctorNumber) {
-        this.doctorNumber = doctorNumber;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-    public void setSpecialization(String specialization) {
-        this.specialization = specialization;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-    public String getSpecialization() {
-        return specialization;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Set<Appointment> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-} 
+}
