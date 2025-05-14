@@ -9,10 +9,12 @@ public class PatientDaoImpl extends AbstractHibernateDao<Patient, Long> implemen
     
     @Override
     public Patient findByPatientNumber(String patientNumber) {
-        return getEntityManager()
-                .createQuery("FROM Patient WHERE patientNumber = :patientNumber",Patient.class)
+        List<Patient> results = getEntityManager()
+                .createQuery("FROM Patient WHERE patientNumber = :patientNumber", Patient.class)
                 .setParameter("patientNumber", patientNumber)
-                .getSingleResult();
+                .getResultList();
+
+        return  results.isEmpty() ? null : results.getFirst();
     }
     
     @Override

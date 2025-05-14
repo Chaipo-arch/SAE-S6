@@ -1,0 +1,44 @@
+package sae.semestre.six.domain.patient;
+
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import sae.semestre.six.domain.appointment.Appointment;
+
+import java.util.Date;
+import java.util.Set;
+
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class PatientInformation {
+
+    private static final String PHONE_NUMBER_PATTERN = "^0\\d{9}$";
+
+    private String patientNumber;
+
+    private String firstName;
+
+    private String lastName;
+
+    private Date dateOfBirth;
+
+    private String gender;
+
+    private String address;
+
+    private String phoneNumber;
+
+    private Set<Appointment> appointmentSet;
+
+    public Patient toPatient(Long id) {
+        return Patient.builder()
+                .patientNumber(patientNumber)
+                .gender(gender).phoneNumber(phoneNumber)
+                .dateOfBirth(dateOfBirth).lastName(lastName)
+                .firstName(firstName).address(address).id(id).appointments(appointmentSet).build();
+    }
+}
