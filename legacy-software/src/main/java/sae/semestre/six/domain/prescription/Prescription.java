@@ -1,11 +1,16 @@
 package sae.semestre.six.domain.prescription;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Setter;
 import sae.semestre.six.domain.patient.Patient;
 
 import jakarta.persistence.*;
 import java.util.Date;
 
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "prescriptions")
 public class Prescription {
     

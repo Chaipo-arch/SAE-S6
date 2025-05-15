@@ -1,8 +1,15 @@
 package sae.semestre.six.domain.patient.history;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import sae.semestre.six.dao.AbstractHibernateDao;
 import org.springframework.stereotype.Repository;
+import sae.semestre.six.domain.appointment.Appointment;
+import sae.semestre.six.domain.billing.Bill;
+import sae.semestre.six.domain.billing.BillDetail;
+import sae.semestre.six.domain.prescription.Prescription;
+
 import java.util.*;
 
 @Repository
@@ -44,5 +51,17 @@ public class PatientHistoryDaoImpl extends AbstractHibernateDao<PatientHistory, 
         query.setParameter("endDate", endDate);
         
         return query.getResultList();
+    }
+
+    @Override
+    public HistoryEntry getHistoryEntryData(Long prescriptionId, Long treatmentId, Long labResultId, Long billId, Long appointmentId) {
+        EntityManager entityManager = getEntityManager();
+        Prescription prescription = entityManager.find(Prescription.class ,prescriptionId);
+        Treatment treatment = entityManager.find(Treatment.class, treatmentId);
+        LabResult labResult = entityManager.find(LabResult.class, labResultId);
+        Bill bill = entityManager.find(Bill.class, billId);
+        Appointment appointment = entityManager.find(Appointment.class, appointmentId);
+
+        return new HistoryEntry(appointment,labResult,treatment,bill,prescription);
     }
 } 

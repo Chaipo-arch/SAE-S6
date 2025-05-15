@@ -26,23 +26,23 @@ public class PatientHistory {
     private Patient patient;
 
     @Builder.Default
-    @OneToMany(mappedBy = "patientHistory", fetch = FetchType.EAGER) 
+    @OneToMany(mappedBy = "patientHistory", fetch = FetchType.LAZY)
     private Set<Appointment> appointments = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.EAGER) 
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<Prescription> prescriptions = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.EAGER) 
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<Treatment> treatments = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.EAGER) 
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<Bill> bills = new HashSet<>();
 
     @Builder.Default
-    @OneToMany(fetch = FetchType.EAGER) 
+    @OneToMany(fetch = FetchType.LAZY)
     private Set<LabResult> labResults = new HashSet<>();
     
     @Column(name = "visit_date")
@@ -93,6 +93,22 @@ public class PatientHistory {
         return bills.stream()
             .mapToDouble(Bill::getTotalAmount)
             .sum();
+    }
+
+    /**
+     * Ajoute une entrée d'historique.
+     * @param treatment
+     * @param bill
+     * @param prescription
+     * @param appointment
+     * @param labResult
+     */
+    public void addHistoryEntry(Treatment treatment, Bill bill, Prescription prescription, Appointment appointment, LabResult labResult) {
+        appointments.add(appointment);
+        prescriptions.add(prescription);
+        bills.add(bill);
+        labResults.add(labResult);
+        treatments.add(treatment);
     }
 
 

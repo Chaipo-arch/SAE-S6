@@ -1,10 +1,13 @@
 package sae.semestre.six.domain.patient.history;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+
 import java.util.Date;
 
 @Entity
 @Table(name = "treatments")
+@Builder
 public class Treatment {
     
     @Id
