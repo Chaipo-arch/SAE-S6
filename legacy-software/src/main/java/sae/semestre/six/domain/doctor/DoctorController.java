@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/doctor")
@@ -23,27 +24,40 @@ public class DoctorController {
 
     // Endpoint pour récupérer tous les docteurs
     @GetMapping
-    public List<Doctor> getAllDoctors() {
-        return doctorDao.findAll();
+    public List<DoctorDTO> getAllDoctors() {
+        return doctorDao.findAll().stream()
+                .map(DoctorDTO::new)
+                .collect(Collectors.toList());
+
     }
 
     // Endpoint pour rechercher un docteur par son numéro unique
     @GetMapping("/number/{doctorNumber}")
-    public Optional<Doctor> getDoctorByNumber(@PathVariable String doctorNumber) {
-        return doctorDao.findByDoctorNumber(doctorNumber);
+    public ResponseEntity<DoctorDTO> getDoctorByNumber(@PathVariable String doctorNumber) {
+        return doctorDao.findByDoctorNumber(doctorNumber)
+                .map(doctor -> new DoctorDTO(doctor))
+                .map(dto -> ResponseEntity.ok(dto))
+                .orElse(ResponseEntity.notFound().build());
     }
+
 
     // Endpoint pour rechercher des docteurs par spécialisation
     @GetMapping("/specialization/{specialization}")
-    public List<Doctor> getDoctorsBySpecialization(@PathVariable String specialization) {
-        return doctorDao.findBySpecialization(specialization);
+    public List<DoctorDTO> getDoctorsBySpecialization(@PathVariable String specialization) {
+        return doctorDao.findBySpecialization(specialization).stream()
+                .map(doctor -> new DoctorDTO(doctor))
+                .collect(Collectors.toList());
     }
+
 
     // Endpoint pour rechercher des docteurs par département
     @GetMapping("/department/{department}")
-    public List<Doctor> getDoctorsByDepartment(@PathVariable String department) {
-        return doctorDao.findByDepartment(department);
+    public List<DoctorDTO> getDoctorsByDepartment(@PathVariable String department) {
+        return doctorDao.findByDepartment(department).stream()
+                .map(doctor -> new DoctorDTO(doctor))
+                .collect(Collectors.toList());
     }
+
 
     // Endpoint pour ajouter un nouveau docteur ou mettre à jour un docteur existant
     @PostMapping
