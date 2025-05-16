@@ -28,6 +28,8 @@ public class Patient {
 
     private static final String PHONE_NUMBER_PATTERN = "^[0-9]\\d{9}$";
 
+    private static final String EMAIL_PATTERN = "^[a-zA-Z]{1,}@[a-zA-Z]{1,}\\.[a-zA-Z]{1,3}$";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,6 +42,9 @@ public class Patient {
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
+
+    @Column(name = "email", nullable = false)
+    private String email;
 
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
@@ -56,6 +61,7 @@ public class Patient {
     @Column(name = "phone_number")
     private String phoneNumber;
 
+    @Builder.Default
     @OneToMany(mappedBy = "patient")
     private Set<Appointment> appointments = new HashSet<>();
 
@@ -88,6 +94,11 @@ public class Patient {
                 .appointments(appointments).id(id).build();
     }
 
+    public void addAppointment(Appointment appointment) {
+        appointments.add(appointment);
+        appointment.setPatient(this);
+    }
+
     /**
      * https://www.baeldung.com/lombok-builder-custom-setter
      */
@@ -99,6 +110,7 @@ public class Patient {
         private  String patientNumber;
         private String firstName;
         private String lastName;
+        private String email;
 
         public PatientBuilder phoneNumber(String phoneNumber) {
             if(phoneNumber != null) {
@@ -144,6 +156,18 @@ public class Patient {
             }
             this.lastName = lastName;
             return this;
+        }
+
+        public PatientBuilder email(String email) {
+            if(email == null) {
+                throw new InvalidDataException("Le patient doit avoir un email");
+            }
+            if(!email.matches(EMAIL_PATTERN)) {
+                throw new InvalidDataException("L'email du patient n'est pas correct");
+            }
+            this.email = email;
+            return this;
+
         }
 
 

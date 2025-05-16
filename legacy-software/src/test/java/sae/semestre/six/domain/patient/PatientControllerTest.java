@@ -8,13 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
-import sae.semestre.six.exception.InvalidDataException;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Date;
 
 @Transactional
 @SpringBootTest
@@ -36,14 +32,17 @@ public class PatientControllerTest {
     private PatientInformation patientInformationIncorrectLastName;
     private PatientInformation patientInformationIncorrectPhoneNumber;
     private PatientInformation patientInformationIncorrectGender;
+    private PatientInformation patientInformationIncorrectEmail;
 
     @BeforeEach
     void setUp() {
-        patientInformationCorrect = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").lastName("C").gender("H").build();
-        patientInformationIncorrectFirstName = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").lastName("C").gender("H").build();
-        patientInformationIncorrectLastName = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").gender("H").build();
-        patientInformationIncorrectPhoneNumber = PatientInformation.builder().patientNumber("123").phoneNumber("1234567").firstName("E").gender("H").lastName("C").build();
-        patientInformationIncorrectGender = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").lastName("C").gender("Abc").build();
+        patientInformationCorrect = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").lastName("C").email("e@e.e").gender("H").build();
+        patientInformationIncorrectFirstName = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").lastName("C").gender("H").email("e@e.e").build();
+        patientInformationIncorrectLastName = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").gender("H").email("e@e.e").build();
+        patientInformationIncorrectPhoneNumber = PatientInformation.builder().patientNumber("123").phoneNumber("1234567").firstName("E").gender("H").email("e@e.e").lastName("C").build();
+        patientInformationIncorrectGender = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").lastName("C").email("e@e.e").gender("Abc").build();
+        patientInformationIncorrectEmail = PatientInformation.builder().patientNumber("123").phoneNumber("1234567891").firstName("E").lastName("C").email("e.e").gender("Abc").build();
+
     }
 
     @Test
@@ -64,6 +63,10 @@ public class PatientControllerTest {
         mockMvc.perform(post("/patient")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(patientInformationIncorrectGender)))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(post("/patient")
+                        .contentType("application/json")
+                        .content(objectMapper.writeValueAsString(patientInformationIncorrectEmail)))
                 .andExpect(status().isBadRequest());
         mockMvc.perform(post("/patient")
                         .contentType("application/json")

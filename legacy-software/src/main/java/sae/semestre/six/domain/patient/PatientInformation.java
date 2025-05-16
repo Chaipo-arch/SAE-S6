@@ -32,13 +32,13 @@ public class PatientInformation {
 
     private String phoneNumber;
 
-    private Set<Appointment> appointmentSet;
+    private String email;
 
     public Patient toPatient(Long id) {
         return Patient.builder()
                 .patientNumber(patientNumber)
                 .gender(gender).phoneNumber(phoneNumber)
-                .dateOfBirth(dateOfBirth).lastName(lastName)
-                .firstName(firstName).address(address).id(id).appointments(appointmentSet).build();
+                .dateOfBirth(dateOfBirth).email(email).lastName(lastName)
+                .firstName(firstName).address(address).id(id).build();
     }
 }

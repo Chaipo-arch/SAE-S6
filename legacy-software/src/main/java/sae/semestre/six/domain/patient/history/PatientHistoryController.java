@@ -4,8 +4,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sae.semestre.six.domain.patient.Patient;
-import sae.semestre.six.domain.patient.PatientDao;
 
 import java.util.*;
 
@@ -43,8 +41,6 @@ public class PatientHistoryController {
         patientHistoryService.addHistoryEntry(idHistoryPatient,idTreatment,idBill,idLabResults,idAppointment,idPrescription);
         return ResponseEntity.ok("Entrée d'historique ajoutée.");
     }
-
-    
     
     @GetMapping("/patient/{patientId}/summary")
     public PatientSummary getPatientSummary(@PathVariable Long patientId) {
