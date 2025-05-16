@@ -13,15 +13,11 @@ import java.util.*;
 @RequestMapping("/patient-history")
 public class PatientHistoryController {
 
-    private final PatientHistoryDao patientHistoryDao;
-
-    private final PatientDao patientDao;
+    private final PatientHistoryService patientHistoryService;
 
     @Autowired
-    public PatientHistoryController(PatientHistoryDao patientHistoryDao, PatientDao patientDao) {
-        this.patientHistoryDao = patientHistoryDao;
-
-        this.patientDao = patientDao;
+    public PatientHistoryController(PatientHistoryService patientHistoryService) {
+        this.patientHistoryService = patientHistoryService;
     }
     
     @GetMapping("/search")
@@ -31,18 +27,20 @@ public class PatientHistoryController {
             @RequestParam Date endDate) {
         
         
-        List<PatientHistory> results = patientHistoryDao.searchByMultipleCriteria(
+        List<PatientHistory> results = patientHistoryService.searchHistory(
             keyword, startDate, endDate);
 
         return results;
     }
 
     @PostMapping("/entry")
-    public ResponseEntity<String> addHistoryEntry(Long idHistoryPatient, Long idTreatment,Long idBill, Long idLabResults, Long idAppointment,Long idPrescription) {
-        PatientHistory patientHistory = patientHistoryDao.findById(idHistoryPatient);
-
-        HistoryEntry historyEntry = patientHistoryDao.getHistoryEntryData(idPrescription,idTreatment,idLabResults,idBill,idAppointment);
-        patientHistory.addHistoryEntry(historyEntry);
+    public ResponseEntity<String> addHistoryEntry(@RequestParam Long idHistoryPatient,
+                                                  @RequestParam Long idTreatment,
+                                                  @RequestParam Long idBill,
+                                                  @RequestParam Long idLabResults,
+                                                  @RequestParam Long idAppointment,
+                                                  @RequestParam Long idPrescription) {
+        patientHistoryService.addHistoryEntry(idHistoryPatient,idTreatment,idBill,idLabResults,idAppointment,idPrescription);
         return ResponseEntity.ok("Entrée d'historique ajoutée.");
     }
 
@@ -50,19 +48,13 @@ public class PatientHistoryController {
     
     @GetMapping("/patient/{patientId}/summary")
     public PatientSummary getPatientSummary(@PathVariable Long patientId) {
-        List<PatientHistory> histories = patientHistoryDao.findCompleteHistoryByPatientId(patientId);
-
-        return new PatientSummary(histories.size(),histories.stream()
-                .mapToDouble(PatientHistory::getTotalBilledAmount)
-                .sum());
+        return patientHistoryService.getPatientSummary(patientId);
     }
 
     @Transactional
     @PostMapping
-    public ResponseEntity<String> createPatientHistory(Long idPatient,PatientHistoryInformation patientHistoryInformation) {
-        Patient patient = patientDao.findById(idPatient);
-        PatientHistory patientHistory = patientHistoryInformation.toPatientHistory(patient);
-        patientHistoryDao.save(patientHistory);
+    public ResponseEntity<String> createPatientHistory(@RequestParam Long idPatient,@RequestParam PatientHistoryInformation patientHistoryInformation) {
+        patientHistoryService.createPatientHistory(idPatient,patientHistoryInformation);
         return ResponseEntity.ok("L'historique du patient est créé.");
     }
 
