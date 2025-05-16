@@ -45,9 +45,14 @@ public class SchedulingController {
         Patient patient = patientDao.findById(patientId);
         List<Appointment> doctorAppointments = appointmentDao.findByDoctorId(doctorId);
         boolean conflict = doctorAppointments.stream()
-                .anyMatch(existing -> existing.getAppointmentDate().equals(appointmentDateTime));
+                .anyMatch(existing -> existing.getAppointmentDate().toLocalDate().equals(appointmentDateTime.toLocalDate()) &&
+                        existing.getAppointmentDate().getHour() == appointmentDateTime.getHour());
+
         if (conflict) {
             return "Doctor is not available at this time";
+        }
+        if(doctor == null || patient == null) {
+            return "Doctor or patient not found";
         }
 
         LocalTime time = appointmentDateTime.toLocalTime();
@@ -59,8 +64,9 @@ public class SchedulingController {
         appointment.setAppointmentDate(appointmentDateTime);
         appointment.setDoctor(doctor);
         appointment.setPatient(patient);
-        appointment.setAppointmentNumber(appointment.getId()+""+appointment.getDoctor().getId());
+        appointment.setAppointmentNumber("APPT" + System.currentTimeMillis());
         appointment.setStatus("SCHEDULED");
+        doctor.getAppointments().add(appointment);
         appointmentDao.save(appointment);
         // Envoyer un email de confirmation
         emailService.sendEmail(
