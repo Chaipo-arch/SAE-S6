@@ -56,11 +56,11 @@ public class PatientHistoryDaoImpl extends AbstractHibernateDao<PatientHistory, 
     @Override
     public HistoryEntry getHistoryEntryData(Long prescriptionId, Long treatmentId, Long labResultId, Long billId, Long appointmentId) {
         EntityManager entityManager = getEntityManager();
-        Prescription prescription = entityManager.find(Prescription.class ,prescriptionId);
-        Treatment treatment = entityManager.find(Treatment.class, treatmentId);
-        LabResult labResult = entityManager.find(LabResult.class, labResultId);
-        Bill bill = entityManager.find(Bill.class, billId);
-        Appointment appointment = entityManager.find(Appointment.class, appointmentId);
+        Prescription prescription = prescriptionId == null ? null : entityManager.find(Prescription.class ,prescriptionId);
+        Treatment treatment = treatmentId == null ? null : entityManager.find(Treatment.class, treatmentId);
+        LabResult labResult = labResultId == null ? null : entityManager.find(LabResult.class, labResultId);
+        Bill bill = billId == null ? null : entityManager.find(Bill.class, billId);
+        Appointment appointment = appointmentId == null ? null : entityManager.find(Appointment.class, appointmentId);
 
         return new HistoryEntry(appointment,labResult,treatment,bill,prescription);
     }

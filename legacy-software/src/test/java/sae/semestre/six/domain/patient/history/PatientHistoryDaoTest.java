@@ -140,4 +140,28 @@ public class PatientHistoryDaoTest {
         }
     }
 
+    @Test
+    void testGetHistoryEntryDataWithWrongIds() {
+        for(PatientHistoryDao dao : daoImplementations) {
+            HistoryEntry historyEntry = dao.getHistoryEntryData(0L, 0L, 0L, 0L, 0L);
+
+            assertNull(historyEntry.prescription());
+            assertNull(historyEntry.treatment());
+            assertNull(historyEntry.labResult());
+            assertNull(historyEntry.bill());
+            assertNull(historyEntry.appointment());
+
+            Long longValue = null;
+            historyEntry = dao.getHistoryEntryData(longValue,longValue,longValue,longValue,longValue);
+            assertNull(historyEntry.prescription());
+            assertNull(historyEntry.treatment());
+            assertNull(historyEntry.labResult());
+            assertNull(historyEntry.bill());
+            assertNull(historyEntry.appointment());
+
+        }
+
+
+    }
+
 }

@@ -37,11 +37,13 @@ public class PatientHistoryController {
         return results;
     }
 
-    public ResponseEntity<String> addHistoryEntry(Long idHistoryPatient, Long idTreatment, Long idLabResults, Long idAppointment,Long id) {
+    @PostMapping("/entry")
+    public ResponseEntity<String> addHistoryEntry(Long idHistoryPatient, Long idTreatment,Long idBill, Long idLabResults, Long idAppointment,Long idPrescription) {
         PatientHistory patientHistory = patientHistoryDao.findById(idHistoryPatient);
 
-        //patientHistory.addHistoryEntry();
-        return ResponseEntity.badRequest().body("");
+        HistoryEntry historyEntry = patientHistoryDao.getHistoryEntryData(idPrescription,idTreatment,idLabResults,idBill,idAppointment);
+        patientHistory.addHistoryEntry(historyEntry);
+        return ResponseEntity.ok("Entrée d'historique ajoutée.");
     }
 
     
@@ -63,4 +65,5 @@ public class PatientHistoryController {
         patientHistoryDao.save(patientHistory);
         return ResponseEntity.ok("L'historique du patient est créé.");
     }
+
 } 

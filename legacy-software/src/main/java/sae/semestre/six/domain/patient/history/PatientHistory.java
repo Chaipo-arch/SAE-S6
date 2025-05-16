@@ -95,22 +95,40 @@ public class PatientHistory {
             .sum();
     }
 
-    /**
-     * Ajoute une entrée d'historique.
-     * @param treatment
-     * @param bill
-     * @param prescription
-     * @param appointment
-     * @param labResult
-     */
-    public void addHistoryEntry(Treatment treatment, Bill bill, Prescription prescription, Appointment appointment, LabResult labResult) {
+    public void addAppointment(Appointment appointment) {
+        if(appointment == null) return;
         appointments.add(appointment);
-        prescriptions.add(prescription);
-        bills.add(bill);
-        labResults.add(labResult);
-        treatments.add(treatment);
+        //Todo SET appointment
     }
 
+    public void addPrescription(Prescription prescription) {
+        if(prescription == null) return;
+        prescriptions.add(prescription);
+    }
+
+    public void addLabResult(LabResult labResult) {
+        if(labResult == null) return;
+        labResults.add(labResult);
+        labResult.setPatientHistory(this);
+    }
+
+    public void addTreatment(Treatment treatment) {
+        if(treatment == null) return;
+        treatments.add(treatment);
+        treatment.setPatientHistory(this);
+    }
+
+    /**
+     * Ajoute une entrée d'historique
+     * @param historyEntry
+     */
+    public void addHistoryEntry(HistoryEntry historyEntry) {
+        addAppointment(historyEntry.appointment());
+        addPrescription(historyEntry.prescription());
+        addBill(historyEntry.bill());
+        addLabResult(historyEntry.labResult());
+        addTreatment(historyEntry.treatment());
+    }
 
     public String getDiagnosis() {
         return diagnosis;
