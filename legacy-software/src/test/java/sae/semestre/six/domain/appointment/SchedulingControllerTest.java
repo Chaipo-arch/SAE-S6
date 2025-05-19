@@ -8,6 +8,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.doctor.DoctorDao;
+import sae.semestre.six.domain.patient.PatientDao;
+import sae.semestre.six.domain.room.RoomDao;
 import sae.semestre.six.mail.EmailService;
 
 import java.time.LocalDate;
@@ -25,7 +27,10 @@ class SchedulingControllerTest {
 
     @Mock
     private DoctorDao doctorDao;
-
+    @Mock
+    private RoomDao roomDao;
+    @Mock
+    private PatientDao patientDao;
     @Mock
     private EmailService emailService;
 
@@ -41,10 +46,10 @@ class SchedulingControllerTest {
     @Test
     @DisplayName("scheduleAppointment doit renvoyer une erreur si le docteur est occupé")
     void scheduleAppointment_shouldReturnDoctorUnavailable() {
-        Long doctorId = 1L;
-        Long patientId = 1L;
+        long doctorId = 1L;
+        long patientId = 1L;
         LocalDateTime targetDate = LocalDateTime.of(2025, 5, 13, 15, 0);
-
+        long roomID = 0L;
         Doctor doctor = new Doctor();
         doctor.setEmail("doctor@example.com");
         when(doctorDao.findById(doctorId)).thenReturn(doctor);
@@ -54,7 +59,7 @@ class SchedulingControllerTest {
         when(appointmentDao.findByDoctorId(doctorId))
                 .thenReturn(List.of(existingAppointment));
 
-        String result = controller.scheduleAppointment(doctorId, patientId, targetDate);
+        String result = controller.scheduleAppointment(doctorId, patientId, roomID,targetDate);
 
         assertEquals("Doctor is not available at this time", result);
         verify(appointmentDao).findByDoctorId(doctorId);
