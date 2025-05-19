@@ -62,10 +62,10 @@ public class Insurance {
 
         public  InsuranceBuilder maxCoverage(Double maxCoverage) {
             if(maxCoverage == null) {
-                throw  new InvalidDataException("La couverture maximale ne peut pas être vide.");
+                throw  new InvalidDataException("The insurance should have a max coverage");
             }
             if(maxCoverage < 0) {
-                throw  new InvalidDataException("Une assurance ne peut pas avoir une couverture négative.");
+                throw  new InvalidDataException("An insurance can't have a max coverage negative");
             }
             this.maxCoverage = maxCoverage;
             return this;
@@ -73,10 +73,10 @@ public class Insurance {
 
         public InsuranceBuilder coveragePercentage(Double coveragePercentage) {
             if(coveragePercentage == null) {
-                throw  new InvalidDataException("La couverture en pourcentage ne peut pas être vide.");
+                throw  new InvalidDataException("The insurance should have a coverage percentage");
             }
             if(coveragePercentage < 0) {
-                throw  new InvalidDataException("Une assurance ne peut pas avoir une couverture négative.");
+                throw  new InvalidDataException("An insurance can't have a coverage percentage negative");
             }
             this.coveragePercentage = coveragePercentage;
             return this;
@@ -84,7 +84,7 @@ public class Insurance {
 
         public InsuranceBuilder policyNumber(String policyNumber) {
             if(policyNumber == null) {
-                throw  new InvalidDataException("Le numéro de l'assurance ne peut être vide.");
+                throw  new InvalidDataException("The insurance should have an policy number");
             }
             this.policyNumber = policyNumber;
             return this;
@@ -92,7 +92,7 @@ public class Insurance {
 
         public InsuranceBuilder expiryDate(Date date) {
             if(date == null) {
-                throw  new InvalidDataException("La date d'expiration ne peut être vide.");
+                throw  new InvalidDataException("The insurance should have an expiration date");
             }
             this.expiryDate = date;
             return this;

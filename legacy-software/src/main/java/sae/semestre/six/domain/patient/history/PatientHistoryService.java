@@ -90,7 +90,11 @@ public class PatientHistoryService {
         if(patient == null) {
             throw new InvalidDataException("The patient id is incorrect");
         }
+        if(patientHistoryDao.findForPatient(idPatient) != null) {
+            throw new InvalidDataException("The history is already created for this patient");
+        }
         PatientHistory history = info.toPatientHistory(patient);
+
         patientHistoryDao.save(history);
     }
 }

@@ -63,7 +63,7 @@ public class PatientHistoryController {
                                                   @RequestParam Long idAppointment,
                                                   @RequestParam Long idPrescription) {
         patientHistoryService.addHistoryEntry(idHistoryPatient,idTreatment,idBill,idLabResults,idAppointment,idPrescription);
-        return ResponseEntity.ok("Entrée d'historique ajoutée.");
+        return ResponseEntity.ok("History entry added");
     }
 
     /**
@@ -88,7 +88,7 @@ public class PatientHistoryController {
     @PostMapping
     public ResponseEntity<String> createPatientHistory(@RequestParam Long idPatient,@RequestBody PatientHistoryInformation patientHistoryInformation) {
         patientHistoryService.createPatientHistory(idPatient,patientHistoryInformation);
-        return ResponseEntity.ok("L'historique du patient est créé.");
+        return ResponseEntity.ok("Patient history created");
     }
 
 } 

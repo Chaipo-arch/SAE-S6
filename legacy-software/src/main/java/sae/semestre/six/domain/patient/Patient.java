@@ -137,7 +137,7 @@ public class Patient {
 
         public PatientBuilder patientNumber(String patientNumber) {
             if(patientNumber == null) {
-                throw new InvalidDataException("The patient must have a patient number");
+                throw new InvalidDataException("The patient should have a patient number");
             }
             this.patientNumber = patientNumber;
             return this;
@@ -145,7 +145,7 @@ public class Patient {
 
         public PatientBuilder firstName(String firstName) {
             if(firstName == null) {
-                throw new InvalidDataException("The patient must have a first name");
+                throw new InvalidDataException("The patient should have a first name");
             }
             this.firstName = firstName;
             return this;
@@ -153,7 +153,7 @@ public class Patient {
 
         public PatientBuilder lastName(String lastName) {
             if(lastName == null) {
-                throw new InvalidDataException("The patient must have a last name");
+                throw new InvalidDataException("The patient should have a last name");
             }
             this.lastName = lastName;
             return this;
@@ -161,10 +161,10 @@ public class Patient {
 
         public PatientBuilder email(String email) {
             if(email == null) {
-                throw new InvalidDataException("Le patient doit avoir un email");
+                throw new InvalidDataException("The patient should have an email");
             }
             if(!email.matches(EMAIL_PATTERN)) {
-                throw new InvalidDataException("L'email du patient n'est pas correct");
+                throw new InvalidDataException("The email must follow an email convention");
             }
             this.email = email;
             return this;

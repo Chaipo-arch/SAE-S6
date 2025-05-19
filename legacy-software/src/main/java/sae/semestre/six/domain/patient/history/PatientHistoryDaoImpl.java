@@ -64,4 +64,15 @@ public class PatientHistoryDaoImpl extends AbstractHibernateDao<PatientHistory, 
 
         return new HistoryEntry(appointment,labResult,treatment,bill,prescription);
     }
+
+    public PatientHistory findForPatient(Long idPatient) {
+        String sql = "SELECT DISTINCT ph FROM PatientHistory ph " +
+                "JOIN FETCH ph.patient " +
+                "WHERE ph.patient.id = :patientId";
+
+        TypedQuery<PatientHistory> query = getEntityManager().createQuery(sql,PatientHistory.class);
+        query.setParameter("patientId", idPatient);
+        List<PatientHistory> patientHistories = query.getResultList();
+        return patientHistories.isEmpty() ? null: patientHistories.getFirst();
+    }
 } 

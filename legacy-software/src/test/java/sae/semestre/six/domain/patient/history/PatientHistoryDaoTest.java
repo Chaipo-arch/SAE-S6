@@ -35,7 +35,7 @@ public class PatientHistoryDaoTest {
     @BeforeEach
     void beforeEach() {
         testPatient = Patient.builder().patientNumber("PAT123").firstName("Marie")
-                .lastName("Curie").gender("F").phoneNumber("0600000000")
+                .lastName("Curie").gender("F").phoneNumber("0600000000").email("e@e.com")
                 .dateOfBirth(new GregorianCalendar(1980, Calendar.JUNE, 1).getTime())
                 .build();
         entityManager.persist(testPatient);

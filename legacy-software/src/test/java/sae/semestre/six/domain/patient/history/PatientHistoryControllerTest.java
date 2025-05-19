@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import sae.semestre.six.domain.patient.Patient;
+import sae.semestre.six.exception.InvalidDataException;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -45,5 +46,23 @@ public class PatientHistoryControllerTest {
                 new PatientHistoryInformation(new Date(),"diagnosis","symptons","notes"));
         PatientHistory patientHistory = patientHistoryDao.findCompleteHistoryByPatientId(testPatient.getId()).getFirst();
         assertEquals("diagnosis",patientHistory.getDiagnosis());
+    }
+
+    @Test
+    void testCreateHistoryBadId() {
+        assertThrows(InvalidDataException.class, () ->patientHistoryController.createPatientHistory(0L,
+                new PatientHistoryInformation(new Date(),"diagnosis","symptons","notes")));
+    }
+
+    @Test
+    void testTwoHistoryCreatedForTheSamePatient() {
+        patientHistoryController.createPatientHistory(testPatient.getId(),
+                new PatientHistoryInformation(new Date(),"diagnosis","symptons","notes"));
+        PatientHistory patientHistory = patientHistoryDao.findCompleteHistoryByPatientId(testPatient.getId()).getFirst();
+        assertEquals("diagnosis",patientHistory.getDiagnosis());
+
+        assertThrows(Exception.class,()->patientHistoryController.createPatientHistory(testPatient.getId(),
+                new PatientHistoryInformation(new Date(),"diagnosis","symptons","notes")));
+
     }
 }
