@@ -101,6 +101,7 @@ public class Patient {
 
     /**
      * https://www.baeldung.com/lombok-builder-custom-setter
+     * Builder personnalisé pour permettre d'ajouter des contraintes de création plus facilement.
      */
     public static class PatientBuilder {
 
