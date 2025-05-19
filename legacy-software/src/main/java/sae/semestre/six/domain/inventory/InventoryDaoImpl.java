@@ -3,11 +3,18 @@ package sae.semestre.six.domain.inventory;
 import sae.semestre.six.dao.AbstractHibernateDao;
 import org.springframework.stereotype.Repository;
 import java.util.List;
-import java.util.Date;
 
+/**
+ * Implementation of the InventoryDao interface for accessing inventory data using Hibernate.
+ */
 @Repository
 public class InventoryDaoImpl extends AbstractHibernateDao<Inventory, Long> implements InventoryDao {
-    
+    /**
+     * Finds an inventory item by its unique item code.
+     *
+     * @param itemCode The unique code of the inventory item
+     * @return The Inventory entity, or null if not found
+     */
     @Override
     public Inventory findByItemCode(String itemCode) {
         return (Inventory) getEntityManager()
@@ -15,49 +22,30 @@ public class InventoryDaoImpl extends AbstractHibernateDao<Inventory, Long> impl
                 .setParameter("itemCode", itemCode)
                 .getSingleResult();
     }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-    public List<Inventory> findByQuantityLessThan(Integer quantity) {
-        return getEntityManager()
-                .createQuery("FROM Inventory WHERE quantity < :quantity")
-                .setParameter("quantity", quantity)
-                .getResultList();
-    }
-    
+
+    /**
+     * Retrieves all inventory items that need restocking.
+     *
+     * @return List of Inventory entities needing restock
+     */
     @Override
     @SuppressWarnings("unchecked")
     public List<Inventory> findNeedingRestock() {
-        
         return getEntityManager()
                 .createQuery("FROM Inventory i WHERE i.quantity <= i.reorderLevel")
                 .getResultList();
     }
-    
-    @Override
-    public void updateStock(String itemCode, Integer quantity) {
-        
-        Inventory inventory = findByItemCode(itemCode);
-        inventory.setQuantity(quantity);
-        inventory.setLastRestocked(new Date());
-        update(inventory);
-        
-        
-        System.out.println("Updated stock for " + itemCode + " to " + quantity);
-    }
-    
-    @Override
-    public void updatePrice(String itemCode, Double price) {
-        
-        getEntityManager()
-                .createQuery("UPDATE Inventory SET unitPrice = :price WHERE itemCode = :itemCode")
-                .setParameter("price", price)
-                .setParameter("itemCode", itemCode)
-                .executeUpdate();
-    }
 
+    /**
+     * Deletes all supplier invoice details referencing the given inventory item.
+     *
+     * @param inventory The Inventory entity
+     */
     @Override
-    public Inventory findByItemCode(String[] itemsCodes) {
-        return null;
+    public void deleteSupplierInvoiceDetailsByInventory(Inventory inventory) {
+        getEntityManager()
+            .createQuery("DELETE FROM SupplierInvoiceDetail d WHERE d.inventory = :inventory")
+            .setParameter("inventory", inventory)
+            .executeUpdate();
     }
-} 
+}

@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.patient;
 
+import lombok.Setter;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
@@ -18,12 +19,15 @@ public class Patient {
     @Column(name = "patient_number", unique = true, nullable = false)
     private String patientNumber;
 
+    @Setter
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @Setter
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Setter
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
@@ -64,4 +68,8 @@ public class Patient {
     public Set<Appointment> getAppointments() {
         return appointments;
     }
-} 
+
+    public void setPatientNumber(String ptest001) {
+        this.patientNumber = ptest001;
+    }
+}
