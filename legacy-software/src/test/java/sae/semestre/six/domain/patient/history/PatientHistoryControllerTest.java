@@ -63,6 +63,5 @@ public class PatientHistoryControllerTest {
 
         assertThrows(Exception.class,()->patientHistoryController.createPatientHistory(testPatient.getId(),
                 new PatientHistoryInformation(new Date(),"diagnosis","symptons","notes")));
-
     }
 }

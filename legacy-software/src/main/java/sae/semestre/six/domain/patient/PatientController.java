@@ -73,7 +73,8 @@ public class PatientController {
         if(patient == null) {
             return ResponseEntity.badRequest( ).body("No patient has the id " + id);
         }
-        patientDao.update(patientInformation.toPatient(id));
+        patient.updateWith(patientInformation);
+        patientDao.update(patient);
         return ResponseEntity.ok("Patient updated");
     }
 

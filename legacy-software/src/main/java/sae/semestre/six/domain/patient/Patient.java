@@ -99,6 +99,21 @@ public class Patient {
         appointment.setPatient(this);
     }
 
+    public void updateWith(PatientInformation patientInformation) {
+        Patient patient = patientInformation.toPatient(id);
+        updateWith(patient);
+    }
+
+    private void updateWith(Patient patient) {
+        this.patientNumber = patient.patientNumber;
+        this.phoneNumber = patient.phoneNumber;
+        this.address = patient.address;
+        this.dateOfBirth = patient.dateOfBirth;
+        this.lastName = patient.lastName;
+        this.firstName = patient.firstName;
+
+    }
+
     /**
      * https://www.baeldung.com/lombok-builder-custom-setter
      * Builder personnalisé pour permettre d'ajouter des contraintes de création plus facilement.

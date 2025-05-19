@@ -77,11 +77,8 @@ public class PatientHistoryService {
      */
     public PatientSummary getPatientSummary(Long patientId) {
         List<PatientHistory> histories = patientHistoryDao.findCompleteHistoryByPatientId(patientId);
+        return PatientSummary.from(histories);
 
-        return new PatientSummary(
-                histories.size(),
-                histories.stream().mapToDouble(PatientHistory::getTotalBilledAmount).sum()
-        );
     }
 
     @Transactional

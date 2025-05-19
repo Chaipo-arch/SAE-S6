@@ -16,8 +16,6 @@ import java.util.Set;
 @Builder
 public class PatientInformation {
 
-    private static final String PHONE_NUMBER_PATTERN = "^0\\d{9}$";
-
     private String patientNumber;
 
     private String firstName;
