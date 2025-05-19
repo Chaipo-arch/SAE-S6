@@ -116,7 +116,7 @@ public class Patient {
             if(phoneNumber != null) {
 
                 if (!isCorrectPhoneNumber(phoneNumber)) {
-                    throw new InvalidDataException("Le numéro de téléphone n'est pas correcte.");
+                    throw new InvalidDataException("The phone number is incorrect");
                 }
                 this.phoneNumber = phoneNumber;
             }
@@ -126,7 +126,7 @@ public class Patient {
         public PatientBuilder gender(String gender) {
             if(gender != null) {
                 if (!isExistingGender(gender)) {
-                    throw new InvalidDataException("Le genre doit être H ou F.");
+                    throw new InvalidDataException("The gender has to be 'H' or 'F'");
                 }
                 this.gender = gender;
             }
@@ -136,7 +136,7 @@ public class Patient {
 
         public PatientBuilder patientNumber(String patientNumber) {
             if(patientNumber == null) {
-                throw new InvalidDataException("Le patient doit avoir un numéro de patient");
+                throw new InvalidDataException("The patient must have a patient number");
             }
             this.patientNumber = patientNumber;
             return this;
@@ -144,7 +144,7 @@ public class Patient {
 
         public PatientBuilder firstName(String firstName) {
             if(firstName == null) {
-                throw new InvalidDataException("Le patient doit avoir un prenom");
+                throw new InvalidDataException("The patient must have a first name");
             }
             this.firstName = firstName;
             return this;
@@ -152,7 +152,7 @@ public class Patient {
 
         public PatientBuilder lastName(String lastName) {
             if(lastName == null) {
-                throw new InvalidDataException("Le patient doit avoir un nom");
+                throw new InvalidDataException("The patient must have a last name");
             }
             this.lastName = lastName;
             return this;

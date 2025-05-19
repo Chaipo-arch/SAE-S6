@@ -49,7 +49,7 @@ public class PatientHistoryController {
 
     @Transactional
     @PostMapping
-    public ResponseEntity<String> createPatientHistory(@RequestParam Long idPatient,@RequestParam PatientHistoryInformation patientHistoryInformation) {
+    public ResponseEntity<String> createPatientHistory(@RequestParam Long idPatient,@RequestBody PatientHistoryInformation patientHistoryInformation) {
         patientHistoryService.createPatientHistory(idPatient,patientHistoryInformation);
         return ResponseEntity.ok("L'historique du patient est créé.");
     }

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.PatientDao;
+import sae.semestre.six.exception.InvalidDataException;
 
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,9 @@ public class PatientHistoryService {
                                 Long idLabResults, Long idAppointment, Long idPrescription) {
 
         PatientHistory patientHistory = patientHistoryDao.findById(idHistoryPatient);
+        if(patientHistory == null) {
+            throw new InvalidDataException("The patient id is incorrect");
+        }
         HistoryEntry historyEntry = patientHistoryDao.getHistoryEntryData(
                 idPrescription, idTreatment, idLabResults, idBill, idAppointment);
         patientHistory.addHistoryEntry(historyEntry);
@@ -36,6 +40,7 @@ public class PatientHistoryService {
 
     public PatientSummary getPatientSummary(Long patientId) {
         List<PatientHistory> histories = patientHistoryDao.findCompleteHistoryByPatientId(patientId);
+
         return new PatientSummary(
                 histories.size(),
                 histories.stream().mapToDouble(PatientHistory::getTotalBilledAmount).sum()
@@ -45,6 +50,9 @@ public class PatientHistoryService {
     @Transactional
     public void createPatientHistory(Long idPatient, PatientHistoryInformation info) {
         Patient patient = patientDao.findById(idPatient);
+        if(patient == null) {
+            throw new InvalidDataException("The patient id is incorrect");
+        }
         PatientHistory history = info.toPatientHistory(patient);
         patientHistoryDao.save(history);
     }
