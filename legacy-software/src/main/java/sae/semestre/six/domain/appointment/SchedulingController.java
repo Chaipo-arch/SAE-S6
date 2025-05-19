@@ -79,6 +79,7 @@ public class SchedulingController {
         appointment.setPatient(patient);
         appointment.setAppointmentNumber("APPT" + System.currentTimeMillis());
         appointment.setStatus("SCHEDULED");
+        patient.getAppointments().add(appointment);
 
         doctor.getAppointments().add(appointment);
         appointmentDao.save(appointment);
