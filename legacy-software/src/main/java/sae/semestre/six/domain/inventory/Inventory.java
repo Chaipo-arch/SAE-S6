@@ -2,6 +2,7 @@ package sae.semestre.six.domain.inventory;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "inventory")
 public class Inventory {
 
@@ -82,11 +84,5 @@ public class Inventory {
         this.unitPrice = dto.unitPrice();
         this.reorderLevel = dto.reorderLevel();
         this.lastRestocked = new Date();
-    }
-
-    /**
-     * Default constructor for JPA.
-     */
-    public Inventory() {
     }
 }

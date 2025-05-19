@@ -121,29 +121,7 @@ public class PrescriptionService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Calculates the total cost of a prescription, including a 20% markup.
-     *
-     * @param prescriptionId The prescription number
-     * @return The total cost with markup, or 0.0 if not found
-     */
-    public Double getPrescriptionCost(String prescriptionId) {
-        Prescription prescription;
-        try {
-            prescription = prescriptionDao.findByPrescriptionId(prescriptionId);
-        } catch (Exception e) {
-            return 0.0;
-        }
-        if (prescription == null) return 0.0;
-        double total = 0.0;
-        List<Inventory> inventories = prescription.getMedicines();
-        if (inventories != null) {
-            for (Inventory inventory : inventories) {
-                if (inventory != null) {
-                    total += inventory.getUnitPrice();
-                }
-            }
-        }
-        return total * 1.2;
+    public Prescription getPrescription(String prescriptionId) {
+        return prescriptionDao.findByPrescriptionId(prescriptionId);
     }
 }

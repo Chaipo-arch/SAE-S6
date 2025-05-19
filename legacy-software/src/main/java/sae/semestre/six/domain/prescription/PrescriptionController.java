@@ -45,6 +45,11 @@ public class PrescriptionController {
      */
     @GetMapping("/cost/{prescriptionId}")
     public Double getPrescriptionCost(@PathVariable String prescriptionId) {
-        return prescriptionService.getPrescriptionCost(prescriptionId);
+        Prescription prescription = prescriptionService.getPrescription(prescriptionId);
+        if (prescription != null) {
+            return prescription.getCostWithVat();
+        } else {
+            throw new IllegalArgumentException("Prescription not found");
+        }
     }
 }

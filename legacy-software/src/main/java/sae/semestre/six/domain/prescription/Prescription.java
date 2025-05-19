@@ -111,4 +111,21 @@ public class Prescription {
         this.notes = notes;
         this.totalCost = cost;
     }
+
+    /**
+     * Calculates the total cost of this prescription, including a 20% markup.
+     *
+     * @return The total cost with markup, or 0.0 if medicines are not set
+     */
+    public Double getCostWithVat() {
+        double total = 0.0;
+        if (medicines != null) {
+            for (Inventory inventory : medicines) {
+                if (inventory != null) {
+                    total += inventory.getUnitPrice();
+                }
+            }
+        }
+        return total * 1.2;
+    }
 }
