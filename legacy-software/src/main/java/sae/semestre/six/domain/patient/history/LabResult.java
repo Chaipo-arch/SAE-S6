@@ -1,10 +1,13 @@
 package sae.semestre.six.domain.patient.history;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+
 import java.util.Date;
 
 @Entity
 @Table(name = "lab_results")
+@Builder
 public class LabResult {
     
     @Id
@@ -12,7 +15,7 @@ public class LabResult {
     private Long id;
     
     @ManyToOne
-    @JoinColumn(name = "patient_history_id")
+    @JoinColumn(name = "patient_history_id",nullable = false)
     private PatientHistory patientHistory;
     
     @Column(name = "test_name")

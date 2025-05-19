@@ -1,5 +1,7 @@
 package sae.semestre.six.domain.appointment;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.history.PatientHistory;
@@ -10,6 +12,8 @@ import java.util.Date;
 
 @Entity
 @Table(name = "appointments")
+@Builder
+@AllArgsConstructor
 public class Appointment {
 
     @Id

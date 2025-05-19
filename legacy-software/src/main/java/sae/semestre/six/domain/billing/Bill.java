@@ -1,5 +1,7 @@
 package sae.semestre.six.domain.billing;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import org.hibernate.Hibernate;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
@@ -14,6 +16,8 @@ import java.util.HashSet;
 
 @Entity
 @Table(name = "bills")
+@Builder
+@AllArgsConstructor
 public class Bill {
     
     @Id
@@ -36,7 +40,7 @@ public class Bill {
     private Date billDate = new Date();
     
     @Column(name = "total_amount")
-    private Double totalAmount = 0.0;
+    private double totalAmount = 0.0;
     
     @Column(name = "status")
     private String status = "PENDING";
@@ -54,11 +58,17 @@ public class Bill {
     @ManyToOne
     private PatientHistory patientHistory;
     
-    
+    public Bill() {
+
+    }
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
     public String getBillNumber() { return billNumber; }
+
+    public void setBillDate(Date billDate) {
+        this.billDate = billDate;
+    }
 
     public void setBillNumber(String billNumber) { this.billNumber = billNumber; }
     
@@ -107,4 +117,7 @@ public class Bill {
     }
 
 
-} 
+    public void setPatientHistory(PatientHistory patientHistory) {
+        this.patientHistory = patientHistory;
+    }
+}

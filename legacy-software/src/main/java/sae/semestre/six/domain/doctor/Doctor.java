@@ -1,11 +1,15 @@
 package sae.semestre.six.domain.doctor;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "doctors")
 public class Doctor {
 
