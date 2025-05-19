@@ -27,7 +27,12 @@ public class BillingController {
             @RequestParam String patientId,
             @RequestParam String doctorId,
             @RequestParam String[] treatments) {
-        return ResponseEntity.ok(billingService.processBill(patientId, doctorId, treatments));
+        try {
+            billingService.processBill(patientId, doctorId, treatments);
+            return ResponseEntity.ok("Bill processed successfully");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+        }
     }
 
     /**

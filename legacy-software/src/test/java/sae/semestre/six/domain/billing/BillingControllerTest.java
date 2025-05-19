@@ -6,9 +6,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.http.ResponseEntity;
 
 import java.io.File;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class BillingControllerTest {
     @Autowired
     private BillingController billingController;
-
+    @Autowired
+    private Environment env;
     @Test
     @DisplayName("Total revenue should be positive")
     public void testGetTotalRevenue() {
@@ -29,17 +32,36 @@ class BillingControllerTest {
     }
 
     @Test
-    @DisplayName("Creation of a bill should increase file length")
+    @DisplayName("Creation of a bill should create new file")
     public void testProcessBill() {
-        String BILLS_FILEPATH = "C:\\hospital\\billing.txt"; // récupérer la valeur de `sae.semestre.six.files.billing`
-        File billingFile = new File(BILLS_FILEPATH);
-        long initialFileSize = billingFile.length();
+        final String FOLDER_NAME = env.getProperty("sae.semestre.six.files.billing");
+        final File BILLS_FOLDER = new File(FOLDER_NAME); // récupérer la valeur de `sae.semestre.six.files.billing`
+        List<String> childrenBefore = new ArrayList<>(Arrays.asList(Objects.requireNonNull(BILLS_FOLDER.list())));
 
-        String result = billingController.processBill("1", "1", new String[]{"CONSULTATION"}).getBody();
+        ResponseEntity<String> responseEntity = billingController.processBill(
+                "1",
+                "1",
+                new String[]{"CONSULTATION"});
 
-        Assertions.assertNotNull(result);
-        assertTrue(result.contains("successfully"));
-        assertTrue(billingFile.length() > initialFileSize);
+        // Check operation success
+        if (responseEntity.getStatusCode().isError()) {
+            fail("Error: " + responseEntity.getStatusCode() + " - " + responseEntity.getBody());
+        }
+        String responseBody = responseEntity.getBody();
+
+        // Check that file was created
+        List<String> childrenAfter = new ArrayList<>(Arrays.asList(Objects.requireNonNull(BILLS_FOLDER.list())));
+        childrenAfter.removeAll(childrenBefore);
+        assertEquals(1, childrenAfter.size());
+
+        File f = new File(BILLS_FOLDER, childrenAfter.getFirst());
+
+        // Check operation success
+        assertNotNull(responseBody);
+        assertTrue(responseBody.contains("successfully"));
+
+        assertTrue(f.exists());
+        assertTrue(f.length() > 0);
     }
 
     @Test

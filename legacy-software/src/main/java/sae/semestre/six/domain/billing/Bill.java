@@ -72,6 +72,14 @@ public class Bill {
     @ManyToOne
     private PatientHistory patientHistory;
 
+    @Getter
+    @Setter
+    private String hashSalt;
+
+    @Getter
+    @Setter
+    private String hash;
+
     public void setStatus(BillStatus status) {
         this.status = status;
         this.lastModified = new Date();

@@ -13,6 +13,9 @@ import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.file.FileHandler;
 import sae.semestre.six.mail.EmailService;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +26,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class BillingService {
 
+    private final BillingSecurityService billingSecurityService;
     @Getter
     private Map<String, Double> priceList = Map.of(
             "CONSULTATION", 50.0,
@@ -31,7 +35,7 @@ public class BillingService {
 
     @Getter
     @Value("${sae.semestre.six.files.billing}")
-    private String BILLS_FILEPATH;
+    private String BILLS_FOLDER;
 
     private final PatientDao patientDao;
     private final FileHandler fileHandler;
@@ -48,40 +52,42 @@ public class BillingService {
      * @return un message notifiant de la réussite ou l'échec de la création de la facture
      */
     @Transactional
-    public String processBill(String patientId, String doctorId, String[] treatments) {
+    public void processBill(String patientId, String doctorId, String[] treatments) {
+        // On récupère le patient et le docteur concerné
+        Patient patient = patientDao.findById(Long.parseLong(patientId));
+        Doctor doctor = doctorDao.findById(Long.parseLong(doctorId));
 
-        try {
-            Patient patient = patientDao.findById(Long.parseLong(patientId));
-            Doctor doctor = doctorDao.findById(Long.parseLong(doctorId));
+//        Hibernate.initialize(doctor.getAppointments());
 
-//            Hibernate.initialize(doctor.getAppointments());
+        Bill bill = new Bill();
+        bill.setBillNumber("BILL" + System.currentTimeMillis());
+        bill.setPatient(patient);
+        bill.setDoctor(doctor);
 
-            Bill bill = new Bill();
-            bill.setBillNumber("BILL" + System.currentTimeMillis());
-            bill.setPatient(patient);
-            bill.setDoctor(doctor);
+        bill.calculateCost(priceList, treatments);
 
-            bill.calculateCost(priceList, treatments);
+        String message = getBillDetailsForLogging(bill, Long.parseLong(patientId), Long.parseLong(doctorId), treatments);
+        File file = Path.of(BILLS_FOLDER).resolve(bill.getBillNumber() + ".txt").toFile();
+        fileHandler.writeToFile(file.getAbsolutePath(), message);
 
-            String message = getBillDetailsForLogging(bill, Long.parseLong(patientId), Long.parseLong(doctorId), treatments);
-            fileHandler.writeToFile(BILLS_FILEPATH, message);
+        BillingSecurityService.BillingSecurityDTO generated = billingSecurityService.generate(message);
+        HexFormat format = HexFormat.of();
+        String salt = format.formatHex(generated.salt());
+        String hash = format.formatHex(generated.hash());
+        bill.setHash(salt);
+        bill.setHashSalt(hash);
 
+        billDao.save(bill);
 
-            billDao.save(bill);
-
-            sendEmailForNewBill(bill);
-
-            return "Bill processed successfully";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
+        sendEmailForNewBill(bill);
     }
 
     /**
      * Construit le message décrivant la nouvelle facture
-     * @param bill la facture
-     * @param patientId l'identifiant du patient
-     * @param doctorId l'identifiant du docteur
+     *
+     * @param bill       la facture
+     * @param patientId  l'identifiant du patient
+     * @param doctorId   l'identifiant du docteur
      * @param treatments les traitements sur la facture
      */
     private String getBillDetailsForLogging(@NonNull Bill bill,

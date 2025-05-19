@@ -3,8 +3,6 @@ package sae.semestre.six.domain.billing;
 import lombok.AllArgsConstructor;
 import org.bouncycastle.crypto.generators.Argon2BytesGenerator;
 import org.bouncycastle.crypto.params.Argon2Parameters;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +55,7 @@ public class BillingSecurityService {
     }
 
     public byte[] getAsBytesBase64(String data) {
-        return Base64.getDecoder().decode(data.getBytes(usedCharset));
+        return Base64.getEncoder().encode(data.getBytes(usedCharset));
     }
 
     public BillingSecurityDTO generate(String input) {
