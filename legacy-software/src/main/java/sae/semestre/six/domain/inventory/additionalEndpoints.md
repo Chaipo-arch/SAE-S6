@@ -36,7 +36,7 @@ Si le cout unitaire est mis à jour alors une entrée dans PriceHistory doit êt
 
 ### DELETE Inventory/{itemCode}
 Ce point d'API permet de supprimer un article spécifique de l'inventaire en fournissant le code de l'article dans l'URL. Il supprime l'article correspondant de la base de données.
-Take into account that the SupplierInvoiceDetails table mmust be deleted first before deleting the Inventory table.
+Take into account that the SupplierInvoiceDetails table must be deleted first before deleting the Inventory table.
 
 ### GET Inventory/PriceHistory/{itemCode}
 Ce point d'API permet de récupérer l'historique des prix d'un article spécifique de l'inventaire en fournissant le code de l'article dans l'URL. Il renvoie une liste d'objets PriceHistoryDTO, chacun contenant les détails suivants :
