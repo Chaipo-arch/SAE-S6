@@ -116,7 +116,7 @@ public class PatientHistoryDaoTest {
         LabResult labResult = LabResult.builder().testName("Test").patientHistory(patientHistory).build();
         Appointment appointment = Appointment.builder().appointmentNumber("App011").doctor(doctor)
                 .patient(testPatient).patientHistory(patientHistory).description("DescriptionApp")
-                .status("CONFIRMÉ").appointmentDate(new Date()).build();
+                .status("CONFIRMÉ").build();
         Bill bill = Bill.builder().billNumber("Bil011")
                 .patientHistory(patientHistory).patient(testPatient)
                 .totalAmount(10.0).status("EN ATTENTE").createdDate(new Date()).build();

@@ -50,11 +50,12 @@ public class TestPrescriptionController {
     @BeforeEach
     public void setup() {
         // Create a patient for testing
-        Patient patient = new Patient();
-        patient.setFirstName("John");
-        patient.setLastName("Doe");
-        patient.setDateOfBirth(new java.util.Date());
-        patient.setPatientNumber("PTEST001"); // Ensure not-null constraint is satisfied
+        Patient patient = Patient.builder()
+                .firstName("John")
+                .lastName("Doe")
+                .email("test.test@gmail.fr")
+                .patientNumber("PTEST001")
+                .build();
         patientDao.save(patient);
         patientId = String.valueOf(patient.getId());
 
@@ -175,11 +176,12 @@ public class TestPrescriptionController {
     @DisplayName("GET /prescriptions/patient/{patientId}: no prescriptions")
     public void testGetPatientPrescriptions_Empty() throws Exception {
         // Use a new patient with no prescriptions
-        Patient newPatient = new Patient();
-        newPatient.setFirstName("Jane");
-        newPatient.setLastName("Smith");
-        newPatient.setDateOfBirth(new java.util.Date());
-        newPatient.setPatientNumber("PTEST002"); // Ensure not-null constraint is satisfied
+        Patient newPatient = Patient.builder()
+                .firstName("Jane")
+                .lastName("Smith")
+                .email("test@test.tf")
+                .patientNumber("PTEST002")
+                .build();
         patientDao.save(newPatient);
         String newPatientId = String.valueOf(newPatient.getId());
 

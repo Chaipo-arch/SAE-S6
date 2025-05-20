@@ -29,7 +29,7 @@ public class Patient {
 
     private static final String PHONE_NUMBER_PATTERN = "^[0-9]\\d{9}$";
 
-    private static final String EMAIL_PATTERN = "^[a-zA-Z]{1,}@[a-zA-Z]{1,}\\.[a-zA-Z]{1,3}$";
+    private static final String EMAIL_PATTERN = "^[a-zA-Z0-9.]{1,}@[a-zA-Z]{1,}\\.[a-zA-Z]{1,3}$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
