@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class BillingService {
-    @Getter
+
     @Value("${sae.semestre.six.files.billing}")
     private String BILLS_FOLDER;
 
@@ -126,6 +126,39 @@ public class BillingService {
     }
 
     /**
+     * @return les identifiants des factures en attente
+     */
+    public List<String> getPendingBillsIds() {
+        return billDao.findByStatus(BillStatus.PENDING)
+                .stream()
+                .map(b -> b.getId().toString())
+                .toList();
+    }
+
+    /**
+     * Met à jour une facture en mettant à jour le statut
+     *
+     * @param billId l'identifiant de la facture
+     * @param status le statut à appliquer sur la facture
+     */
+    @Transactional
+    protected void updateBill(String billId, BillStatus status, String[] types) {
+        Bill bill = billDao.findById(Long.valueOf(billId));
+        bill.setStatus(status);
+        billDao.update(bill);
+    }
+
+    /**
+     * Recalcule les factures en attentes
+     */
+    @Transactional
+    protected void recalculateAllPendingBills() {
+        for (String billId : getPendingBillsIds()) {
+            updateBill(billId, BillStatus.RECALC, new String[]{"CONSULTATION"});
+        }
+    }
+
+    /**
      * @param treatments les traitements facturables
      * @return les éléments facturables par leurs noms
      */
@@ -199,38 +232,5 @@ public class BillingService {
                 "New Bill Generated",
                 emailContent
         );
-    }
-
-    /**
-     * Met à jour une facture en mettant à jour le statut
-     *
-     * @param billId l'identifiant de la facture
-     * @param status le statut à appliquer sur la facture
-     */
-    @Transactional
-    protected void updateBill(String billId, BillStatus status, String[] types) {
-        Bill bill = billDao.findById(Long.valueOf(billId));
-        bill.setStatus(status);
-        billDao.update(bill);
-    }
-
-    /**
-     * Recalcule les factures en attentes
-     */
-    @Transactional
-    protected void recalculateAllPendingBills() {
-        for (String billId : getPendingBillsIds()) {
-            updateBill(billId, BillStatus.RECALC, new String[]{"CONSULTATION"});
-        }
-    }
-
-    /**
-     * @return les identifiants des factures en attente
-     */
-    List<String> getPendingBillsIds() {
-        return billDao.findByStatus(BillStatus.PENDING)
-                .stream()
-                .map(b -> b.getId().toString())
-                .toList();
     }
 }
