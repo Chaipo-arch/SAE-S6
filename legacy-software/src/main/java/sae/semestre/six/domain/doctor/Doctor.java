@@ -1,5 +1,9 @@
 package sae.semestre.six.domain.doctor;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import sae.semestre.six.domain.appointment.Appointment;
@@ -7,6 +11,8 @@ import sae.semestre.six.domain.appointment.Appointment;
 import jakarta.persistence.*;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Builder
 @AllArgsConstructor
@@ -17,12 +23,15 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Le numéro du docteur est obligatoire")
     @Column(name = "doctor_number", unique = true, nullable = false)
     private String doctorNumber;
 
+    @NotBlank(message = "Le prénom est obligatoire")
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @NotBlank(message = "Le nom est obligatoire")
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
@@ -45,28 +54,5 @@ public class Doctor {
     public Doctor() {
     }
 
-    
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getSpecialization() {
-        return specialization;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public Set<Appointment> getAppointments() {
-        return appointments;
-    }
-
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-} 
+}
