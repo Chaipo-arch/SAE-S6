@@ -95,7 +95,7 @@ public class TestPrescriptionController {
         mockMvc.perform(post("/prescriptions/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("created and billed")));
     }
 
@@ -116,7 +116,7 @@ public class TestPrescriptionController {
         mockMvc.perform(post("/prescriptions/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("Failed:")));
     }
 
@@ -137,7 +137,7 @@ public class TestPrescriptionController {
         mockMvc.perform(post("/prescriptions/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().string(containsString("Failed:")));
     }
 
@@ -159,7 +159,7 @@ public class TestPrescriptionController {
         mockMvc.perform(post("/prescriptions/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         mockMvc.perform(get("/prescriptions/patient/" + patientId))
                 .andExpect(status().isOk())
@@ -206,12 +206,10 @@ public class TestPrescriptionController {
         String response = mockMvc.perform(post("/prescriptions/add")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-
         // Extract prescription number from response
         String prescriptionNumber = "RX" + response.replaceAll("[A-Za-z ]", "");
-
         mockMvc.perform(get("/prescriptions/cost/" + prescriptionNumber))
                 .andExpect(status().isOk())
                 .andExpect(content().string(not("0.0")));

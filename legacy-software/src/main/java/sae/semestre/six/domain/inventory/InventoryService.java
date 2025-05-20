@@ -86,8 +86,7 @@ public class InventoryService {
     @Transactional
     public InventoryDTO updateInventory(String itemCode, InventoryDTO dto) {
         Inventory inv = inventoryDao.findByItemCode(itemCode);
-        boolean priceChanged = !inv.getUnitPrice().equals(dto.unitPrice());
-        Double oldPrice = inv.getUnitPrice();
+        PriceHistory priceHistory = null;
         if (dto.name() != null && !dto.name().isEmpty()) {
             inv.setName(dto.name());
         }
@@ -101,32 +100,23 @@ public class InventoryService {
         } else if (dto.quantity() != null) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         }
-        if (dto.unitPrice() != null && dto.unitPrice() >= 0) {
-            inv.setUnitPrice(dto.unitPrice());
-        } else if (dto.unitPrice() != null) {
-            throw new IllegalArgumentException("Unit price cannot be negative");
+        if (dto.unitPrice() != null) {
+            priceHistory = inv.changePrice(dto.unitPrice());
         }
-        if (dto.reorderLevel() != null && dto.reorderLevel() >= 0) {
-            inv.setReorderLevel(dto.reorderLevel());
-        } else if (dto.reorderLevel() != null) {
-            throw new IllegalArgumentException("Reorder level cannot be negative");
+        if (dto.reorderLevel() != null) {
+            inv.changeReorderLevel(dto.reorderLevel());
         }
         if (dto.lastRestocked() != null && !dto.lastRestocked().isEmpty()) {
             try {
                 java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm");
-                inv.setLastRestocked(sdf.parse(dto.lastRestocked()));
+                inv.changeLastRestocked(sdf.parse(dto.lastRestocked()));
             } catch (java.text.ParseException e) {
                 throw new IllegalArgumentException("Invalid date format for lastRestocked. Expected dd/MM/yyyy HH:mm");
             }
         }
         inventoryDao.update(inv);
-        if (priceChanged) {
-            PriceHistory ph = new PriceHistory();
-            ph.setInventory(inv);
-            ph.setOldPrice(oldPrice);
-            ph.setNewPrice(dto.unitPrice());
-            ph.setChangeDate(new Date());
-            priceHistoryDao.save(ph);
+        if (priceHistory != null) {
+            priceHistoryDao.save(priceHistory);
         }
         return new InventoryDTO(inv);
     }

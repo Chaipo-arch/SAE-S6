@@ -39,6 +39,7 @@ public class Inventory {
     /**
      * Current quantity in stock.
      */
+    @Setter
     @Column(name = "quantity")
     private Integer quantity = 0;
 
@@ -100,6 +101,32 @@ public class Inventory {
         if (amount > this.quantity) throw new IllegalArgumentException("Not enough stock");
         this.quantity -= amount;
         validateInvariants();
+    }
+
+    /**
+     * Change the price of the item and return a PriceHistory if changed.
+     */
+    public PriceHistory changePrice(Double newPrice) {
+        if (newPrice == null || newPrice < 0) throw new IllegalArgumentException("Unit price cannot be negative");
+        if (this.unitPrice != null && this.unitPrice.equals(newPrice)) return null;
+        PriceHistory ph = new PriceHistory();
+        ph.setInventory(this);
+        ph.setOldPrice(this.unitPrice);
+        ph.setNewPrice(newPrice);
+        ph.setChangeDate(new Date());
+        this.unitPrice = newPrice;
+        return ph;
+    }
+
+    public void changeReorderLevel(Integer newLevel) {
+        if (newLevel == null || newLevel < 0) throw new IllegalArgumentException("Reorder level cannot be negative");
+        this.reorderLevel = newLevel;
+        validateInvariants();
+    }
+
+    public void changeLastRestocked(Date date) {
+        if (date == null) throw new IllegalArgumentException("Last restocked date cannot be null");
+        this.lastRestocked = date;
     }
 
     public boolean isBelowReorderLevel() {

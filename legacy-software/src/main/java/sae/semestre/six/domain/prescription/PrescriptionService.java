@@ -122,6 +122,10 @@ public class PrescriptionService {
     }
 
     public Prescription getPrescription(String prescriptionId) {
-        return prescriptionDao.findByPrescriptionId(prescriptionId);
+        try {
+            return prescriptionDao.findByPrescriptionId(prescriptionId);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Prescription not found");
+        }
     }
 }

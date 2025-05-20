@@ -1,9 +1,12 @@
 package sae.semestre.six.domain.prescription;
 
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * REST controller for managing prescription-related endpoints.
@@ -22,8 +25,12 @@ public class PrescriptionController {
      * @return Status message indicating success or failure
      */
     @PostMapping("/add")
-    public String addPrescription(@RequestBody PrescriptionDTO dto) {
-        return prescriptionService.addPrescription(dto);
+    public ResponseEntity<?> addPrescription(@RequestBody PrescriptionDTO dto) {
+        try {
+            return new ResponseEntity<>(prescriptionService.addPrescription(dto), HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 
     /**
@@ -33,8 +40,8 @@ public class PrescriptionController {
      * @return List of PrescriptionDTOs for the patient
      */
     @GetMapping("/patient/{patientId}")
-    public List<PrescriptionDTO> getPatientPrescriptions(@PathVariable String patientId) {
-        return prescriptionService.getPatientPrescriptions(patientId);
+    public ResponseEntity<?> getPatientPrescriptions(@PathVariable String patientId) {
+        return new ResponseEntity<>(prescriptionService.getPatientPrescriptions(patientId), HttpStatus.OK);
     }
 
     /**
@@ -44,10 +51,16 @@ public class PrescriptionController {
      * @return The total cost with markup
      */
     @GetMapping("/cost/{prescriptionId}")
-    public Double getPrescriptionCost(@PathVariable String prescriptionId) {
-        Prescription prescription = prescriptionService.getPrescription(prescriptionId);
+    public ResponseEntity<?> getPrescriptionCost(@PathVariable String prescriptionId) {
+        Prescription prescription;
+        try {
+            prescription = prescriptionService.getPrescription(prescriptionId);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+        }
         if (prescription != null) {
-            return prescription.getCostWithVat();
+            double total = prescription.getCostWithVat();
+            return ResponseEntity.ok(Map.of("totalCost", total));
         } else {
             throw new IllegalArgumentException("Prescription not found");
         }
