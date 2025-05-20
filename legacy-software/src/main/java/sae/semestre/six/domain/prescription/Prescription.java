@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.prescription;
 
+import sae.semestre.six.domain.billing.Billable;
 import sae.semestre.six.domain.patient.Patient;
 
 import jakarta.persistence.*;
@@ -7,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "prescriptions")
-public class Prescription {
+public class Prescription implements Billable {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -81,5 +82,15 @@ public class Prescription {
 
     public void setTotalCost(Double totalCost) {
         this.totalCost = totalCost;
+    }
+
+    @Override
+    public double getBillableAmount() {
+        return totalCost;
+    }
+
+    @Override
+    public String getBillableName() {
+        return "PRESCRIPTION_" + prescriptionNumber;
     }
 }

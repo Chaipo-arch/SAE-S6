@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.billing;
 
+import jakarta.persistence.NoResultException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,6 +50,8 @@ public class BillingController {
         try {
             billingService.updatePrice(treatment, price);
             return ResponseEntity.ok("Price updated");
+        } catch (NoResultException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

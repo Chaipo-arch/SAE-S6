@@ -2,17 +2,25 @@ package sae.semestre.six.domain.billing;
 
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import sae.semestre.six.domain.billing.medical_acts.MedicalAct;
+import sae.semestre.six.domain.billing.medical_acts.MedicalActDaoImpl;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @RequiredArgsConstructor
@@ -21,6 +29,21 @@ class BillingControllerTest {
     private BillingController billingController;
     @Autowired
     private Environment env;
+    @MockitoBean
+    private MedicalActDaoImpl medicalActDao;
+
+    private final static String TREATMENT_NAME = "CONSULTATION";
+    private final static double TREATMENT_PRICE = 50.0;
+
+    @BeforeEach
+    void setup() {
+        MedicalAct medicalAct = MedicalAct.builder()
+                .name(TREATMENT_NAME).
+                price(TREATMENT_PRICE)
+                .build();
+        when(medicalActDao.findByName(TREATMENT_NAME)).thenReturn(medicalAct);
+    }
+
     @Test
     @DisplayName("Total revenue should be positive")
     public void testGetTotalRevenue() {
@@ -41,7 +64,7 @@ class BillingControllerTest {
         ResponseEntity<String> responseEntity = billingController.processBill(
                 "1",
                 "1",
-                new String[]{"CONSULTATION"});
+                new String[]{TREATMENT_NAME});
 
         // Check operation success
         if (responseEntity.getStatusCode().isError()) {
@@ -77,17 +100,13 @@ class BillingControllerTest {
     }
 
     @Test
-    @DisplayName("Updated price should show up in fetched treatment prices")
+    @DisplayName("Updating prices doesn't throw an error")
     public void testUpdatePrice() {
-        final String consultation = "CONSULTATION";
-        billingController.updatePrice(consultation, 75.0);
-        Map<String, Double> body = billingController.getPrices().getBody();
+        final double expectedNewPrice = 50.0;
 
-        Assertions.assertNotNull(body);
-        Assertions.assertTrue(body.containsKey(consultation));
-
-        double consultationPrice = body.get(consultation);
-//        assertEquals(75.0, consultationPrice, 0.01);
-        assertEquals(50.0, consultationPrice, 0.01);
+        // Action
+        ResponseEntity<String> updateResponseEntity = billingController.updatePrice(TREATMENT_NAME, expectedNewPrice);
+        // Assertions
+        Assertions.assertTrue(updateResponseEntity.getStatusCode().is2xxSuccessful());
     }
-} 
+}

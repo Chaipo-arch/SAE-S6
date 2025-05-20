@@ -6,18 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sae.semestre.six.domain.billing.medical_acts.MedicalActDaoImpl;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.doctor.DoctorDao;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.PatientDao;
+import sae.semestre.six.domain.prescription.PrescriptionDaoImpl;
 import sae.semestre.six.file.FileHandler;
 import sae.semestre.six.mail.EmailService;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.HexFormat;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service en charge des facturations
@@ -25,18 +26,13 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class BillingService {
-
-    private final BillingSecurityService billingSecurityService;
-    @Getter
-    private Map<String, Double> priceList = Map.of(
-            "CONSULTATION", 50.0,
-            "XRAY", 150.0,
-            "SURGERY", 1000.0);
-
     @Getter
     @Value("${sae.semestre.six.files.billing}")
     private String BILLS_FOLDER;
 
+    private final BillingSecurityService billingSecurityService;
+    private final MedicalActDaoImpl medicalActDao;
+    private final PrescriptionDaoImpl prescriptionDao;
     private final PatientDao patientDao;
     private final FileHandler fileHandler;
     private final BillDao billDao;
@@ -49,27 +45,28 @@ public class BillingService {
      * @param patientId  l'identifiant du patient ayant été pris en charge
      * @param doctorId   l'identifiant du doctor l'ayant pris en charge
      * @param treatments les traitements prescrits pour cette facture
-     * @return un message notifiant de la réussite ou l'échec de la création de la facture
      */
     @Transactional
     public void processBill(String patientId, String doctorId, String[] treatments) {
         // On récupère le patient et le docteur concerné
         Patient patient = patientDao.findById(Long.parseLong(patientId));
         Doctor doctor = doctorDao.findById(Long.parseLong(doctorId));
+        List<Billable> items = findBillablesByName(treatments);
 
-//        Hibernate.initialize(doctor.getAppointments());
-
+        // Initialise la facture
         Bill bill = new Bill();
         bill.setBillNumber("BILL" + System.currentTimeMillis());
         bill.setPatient(patient);
         bill.setDoctor(doctor);
+        bill.setBillDetails(items);
+        bill.calculateTotal();
 
-        bill.calculateCost(priceList, treatments);
-
-        String message = getBillDetailsForLogging(bill, Long.parseLong(patientId), Long.parseLong(doctorId), treatments);
+        // Récupère et écrit les informations dans la facture
+        String message = buildBillFileContents(bill, Long.parseLong(patientId), Long.parseLong(doctorId), treatments);
         File file = Path.of(BILLS_FOLDER).resolve(bill.getBillNumber() + ".txt").toFile();
         fileHandler.writeToFile(file.getAbsolutePath(), message);
 
+        // Génère un hash pour le contenu du fichier et l'ajoute aux informations de la facture
         BillingSecurityService.BillingSecurityDTO generated = billingSecurityService.generate(message);
         HexFormat format = HexFormat.of();
         String salt = format.formatHex(generated.salt());
@@ -77,9 +74,37 @@ public class BillingService {
         bill.setHash(salt);
         bill.setHashSalt(hash);
 
+        // Sauvegarde la facture
         billDao.save(bill);
 
+        // Prévient de l'arrivée d'une nouvelle facture
         sendEmailForNewBill(bill);
+    }
+
+    /**
+     * @param treatments les traitements facturables
+     * @return les éléments facturables par leurs noms
+     */
+    private List<Billable> findBillablesByName(String[] treatments) {
+        return new ArrayList<>(Arrays.asList(treatments))
+                .stream()
+                .map(this::findBillableByName)
+                .toList();
+    }
+
+    /**
+     * @param billableName le nom de l'élément facturable
+     * @return le nom de l'élément facturable
+     */
+    private Billable findBillableByName(String billableName) {
+        final String prescriptionBeginning = "PRESCRIPTION_";
+        boolean isPrescription = billableName.startsWith(prescriptionBeginning);
+        if (isPrescription) {
+            String prescriptionNumber = billableName.replace(prescriptionBeginning, "");
+            return prescriptionDao.findByPrescriptionNumber(prescriptionNumber);
+        } else {
+            return medicalActDao.findByName(billableName);
+        }
     }
 
     /**
@@ -90,10 +115,10 @@ public class BillingService {
      * @param doctorId   l'identifiant du docteur
      * @param treatments les traitements sur la facture
      */
-    private String getBillDetailsForLogging(@NonNull Bill bill,
-                                            @NonNull Long patientId,
-                                            @NonNull Long doctorId,
-                                            @NonNull String[] treatments) {
+    private String buildBillFileContents(@NonNull Bill bill,
+                                         @NonNull Long patientId,
+                                         @NonNull Long doctorId,
+                                         @NonNull String[] treatments) {
         if (bill.getBillNumber() == null) {
             throw new IllegalStateException("Bill number is null");
         }
@@ -107,7 +132,7 @@ public class BillingService {
 
         StringBuilder billDetailsBuilder = new StringBuilder(billDetails);
         for (String treatment : treatments) {
-            double price = priceList.get(treatment);
+            double price = medicalActDao.findPriceByName(treatment);
             billDetailsBuilder.append(treatment).append(": $").append(price).append("\n");
         }
         billDetails = billDetailsBuilder.toString();
@@ -137,7 +162,8 @@ public class BillingService {
      * @param billId l'identifiant de la facture
      * @param status le statut à appliquer sur la facture
      */
-    private void updateBill(String billId, BillStatus status, String[] types) {
+    @Transactional
+    protected void updateBill(String billId, BillStatus status, String[] types) {
         Bill bill = billDao.findById(Long.valueOf(billId));
         bill.setStatus(status);
         billDao.update(bill);
@@ -149,27 +175,42 @@ public class BillingService {
      * @param treatment l'identifiant du traitement mis à jour
      * @param price     le nouveau prix du traitement
      */
+    @Transactional
     public void updatePrice(
             String treatment,
             double price) {
-        priceList.put(treatment, price);
+        medicalActDao.updatePrice(treatment, price);
         recalculateAllPendingBills();
     }
 
     /**
      * Recalcule les factures en attentes
      */
-    private void recalculateAllPendingBills() {
+    @Transactional
+    protected void recalculateAllPendingBills() {
         for (String billId : getPendingBillsIds()) {
             updateBill(billId, BillStatus.RECALC, new String[]{"CONSULTATION"});
         }
     }
 
+    /**
+     * @return les identifiants des factures en attente
+     */
     List<String> getPendingBillsIds() {
         return billDao.findByStatus(BillStatus.PENDING)
                 .stream()
                 .map(b -> b.getId().toString())
                 .toList();
+    }
+
+    /**
+     * @return la liste des prix des actes médicaux
+     */
+    public Map<String, Double> getPriceList() {
+        return medicalActDao.findAll()
+                .stream()
+                .map(medicalAct -> Map.entry(medicalAct.getName(), medicalAct.getPrice()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     /**

@@ -7,10 +7,7 @@ import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.history.PatientHistory;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Représente une facture
@@ -58,7 +55,6 @@ public class Bill {
     private BillStatus status = BillStatus.PENDING;
 
     @Getter
-    @Setter
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<BillDetail> billDetails = new HashSet<>();
 
@@ -86,35 +82,43 @@ public class Bill {
     }
 
     /**
-     * Modifie les détails de la facture et son coût total, en le calculant grâce à la liste des prix et les liste
-     * des traitements associés passé en argument
-     *
-     * @param priceList  la liste des prix des traitements
-     * @param treatments les traitements
+     * Ajoute les détails de la facture
+     * @param billables les billables de la facture
      */
-    public void calculateCost(Map<String, Double> priceList, String[] treatments) {
-        final double TAUX_REDUCTION = 0.9;
-        double total = 0.0;
+    public void setBillDetails(List<Billable> billables) {
         Set<BillDetail> details = new HashSet<>();
-
-        for (String treatment : treatments) {
-            double price = priceList.get(treatment);
-            total += price;
-
+        for (Billable billable : billables) {
             BillDetail detail = new BillDetail();
             detail.setBill(this);
-            detail.setTreatmentName(treatment);
-            detail.setUnitPrice(price);
+            detail.setTreatmentName(billable.getBillableName());
+            detail.setUnitPrice(billable.getBillableAmount());
             details.add(detail);
+        }
+        this.setBillDetails(details);
+    }
 
-            //Hibernate.initialize(detail); //TODO : vérifier utilité
+    /**
+     * @param details les détails de la facture
+     */
+    public void setBillDetails(Set<BillDetail> details) {
+        this.billDetails = details;
+    }
+
+    /**
+     * Calcule et remplit le total de la facture
+     */
+    public void calculateTotal() {
+        final double TAUX_REDUCTION = 0.9;
+        final double SEUIL_REDUCTION = 500.0;
+        double total = 0.0;
+
+        for (BillDetail item : this.getBillDetails()) {
+            total += item.getLineTotal();
         }
 
-        if (total > 500) {
+        if (total > SEUIL_REDUCTION) {
             total = total * TAUX_REDUCTION;
         }
-
         this.setTotalAmount(total);
-        this.setBillDetails(details);
     }
 } 
