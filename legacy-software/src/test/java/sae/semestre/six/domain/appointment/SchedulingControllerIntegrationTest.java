@@ -92,11 +92,12 @@ public class SchedulingControllerIntegrationTest {
         // Créer une salle pour les tests
         // Définir les propriétés de la salle directement dans la base de données
         entityManager.createNativeQuery(
-                        "INSERT INTO rooms (room_number, type, capacity, current_patient_count) VALUES (?1, ?2, ?3, ?4)")
+                        "INSERT INTO rooms (room_number, type,is_occupied, capacity, current_patient_count) VALUES (?1, ?2,?5, ?3, ?4)")
                 .setParameter(1, "TEST-ROOM-001")
                 .setParameter(2, "Consultation")
                 .setParameter(3, 5)
                 .setParameter(4, 0)
+                .setParameter(5, false)
                 .executeUpdate();
 
         // Récupérer la salle créée
