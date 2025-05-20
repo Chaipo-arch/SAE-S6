@@ -86,9 +86,10 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
         }
     }
 
-    public int getSize() {
-        return entityManager
-                .createQuery("SELECT COUNT FROM " + persistentClass.getName())
-                .getFirstResult();
+    @Override
+    public int count() {
+        return ((Number) entityManager
+                .createQuery("SELECT COUNT(e) FROM " + persistentClass.getName() + " e")
+                .getSingleResult()).intValue();
     }
 }

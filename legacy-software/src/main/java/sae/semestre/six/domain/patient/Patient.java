@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.patient;
 
+import lombok.Setter;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -28,7 +29,7 @@ public class Patient {
 
     private static final String PHONE_NUMBER_PATTERN = "^[0-9]\\d{9}$";
 
-    private static final String EMAIL_PATTERN = "^[a-zA-Z]{1,}@[a-zA-Z]{1,}\\.[a-zA-Z]{1,3}$";
+    private static final String EMAIL_PATTERN = "^[a-zA-Z0-9.]{1,}@[a-zA-Z]{1,}\\.[a-zA-Z]{1,3}$";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,12 +38,15 @@ public class Patient {
     @Column(name = "patient_number", unique = true, nullable = false)
     private String patientNumber;
 
+    @Setter
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @Setter
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Setter
     @Column(name = "email", nullable = false)
     private String email;
 

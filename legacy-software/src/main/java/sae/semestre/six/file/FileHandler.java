@@ -10,6 +10,7 @@ import java.util.function.Consumer;
 public class FileHandler {
 
     public void writeToFile(String file,String content) {
+
         try (FileWriter fileWriter = new FileWriter(file, true)) {
             fileWriter.write(content);
         } catch (IOException e) {
