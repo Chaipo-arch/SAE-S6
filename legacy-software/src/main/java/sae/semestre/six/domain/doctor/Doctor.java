@@ -3,6 +3,9 @@ package sae.semestre.six.domain.doctor;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
@@ -11,6 +14,8 @@ import java.util.Set;
 @Setter
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @Table(name = "doctors")
 public class Doctor {
 
