@@ -102,11 +102,20 @@ class BillingControllerTest {
     @Test
     @DisplayName("Updating prices doesn't throw an error")
     public void testUpdatePrice() {
-        final double expectedNewPrice = 50.0;
+        final double newPrice = 50.0;
 
         // Action
-        ResponseEntity<String> updateResponseEntity = billingController.updatePrice(TREATMENT_NAME, expectedNewPrice);
+        ResponseEntity<String> updateResponseEntity = billingController.updatePrice(TREATMENT_NAME, newPrice);
         // Assertions
         Assertions.assertTrue(updateResponseEntity.getStatusCode().is2xxSuccessful());
+    }
+
+    @Test
+    @DisplayName("Creating prices doesn't throw an error")
+    public void testAddPrice() {
+        // Action
+        ResponseEntity<String> createResponseEntity = billingController.setPrice(TREATMENT_NAME, TREATMENT_PRICE);
+        // Assertions
+        Assertions.assertTrue(createResponseEntity.getStatusCode().is2xxSuccessful());
     }
 }

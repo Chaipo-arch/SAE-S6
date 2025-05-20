@@ -36,6 +36,18 @@ public class BillingController {
         }
     }
 
+    @PostMapping("/price")
+    public ResponseEntity<String> setPrice(
+            @RequestParam String treatment,
+            @RequestParam double price) {
+        try {
+            billingService.addPrice(treatment, price);
+            return ResponseEntity.ok("Price created");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     /**
      * Met à jour le prix d'un acte médical
      *

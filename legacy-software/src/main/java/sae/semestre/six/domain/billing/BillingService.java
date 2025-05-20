@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sae.semestre.six.domain.billing.medical_acts.MedicalAct;
 import sae.semestre.six.domain.billing.medical_acts.MedicalActDaoImpl;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.doctor.DoctorDao;
@@ -82,6 +83,49 @@ public class BillingService {
     }
 
     /**
+     * Met à jour le prix d'un traitement pour toutes les factures en attente
+     *
+     * @param treatment l'identifiant du traitement mis à jour
+     * @param price     le nouveau prix du traitement
+     */
+    @Transactional
+    public void updatePrice(
+            String treatment,
+            double price) {
+        medicalActDao.updatePrice(treatment, price);
+        recalculateAllPendingBills();
+    }
+
+    /**
+     * @return la liste des prix des actes médicaux
+     */
+    public Map<String, Double> getPriceList() {
+        return medicalActDao.findAll()
+                .stream()
+                .map(medicalAct -> Map.entry(medicalAct.getName(), medicalAct.getPrice()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
+     * Récupère le total du prix des factures
+     *
+     * @return une chaîne de caractères décrivant le total des factures
+     */
+    public double getTotalRevenue() {
+        return billDao.getTotalCost();
+    }
+
+    /**
+     * Ajoute le prix d'un acte médical
+     * @param treatment le nom de l'acte médical
+     * @param price le prix (unitaire) de l'acte
+     */
+    public void addPrice(String treatment, double price) {
+        MedicalAct medicalAct = MedicalAct.builder().name(treatment).price(price).build();
+        medicalActDao.save(medicalAct);
+    }
+
+    /**
      * @param treatments les traitements facturables
      * @return les éléments facturables par leurs noms
      */
@@ -99,6 +143,7 @@ public class BillingService {
     private Billable findBillableByName(String billableName) {
         final String prescriptionBeginning = "PRESCRIPTION_";
         boolean isPrescription = billableName.startsWith(prescriptionBeginning);
+
         if (isPrescription) {
             String prescriptionNumber = billableName.replace(prescriptionBeginning, "");
             return prescriptionDao.findByPrescriptionNumber(prescriptionNumber);
@@ -170,20 +215,6 @@ public class BillingService {
     }
 
     /**
-     * Met à jour le prix d'un traitement pour toutes les factures en attente
-     *
-     * @param treatment l'identifiant du traitement mis à jour
-     * @param price     le nouveau prix du traitement
-     */
-    @Transactional
-    public void updatePrice(
-            String treatment,
-            double price) {
-        medicalActDao.updatePrice(treatment, price);
-        recalculateAllPendingBills();
-    }
-
-    /**
      * Recalcule les factures en attentes
      */
     @Transactional
@@ -202,23 +233,4 @@ public class BillingService {
                 .map(b -> b.getId().toString())
                 .toList();
     }
-
-    /**
-     * @return la liste des prix des actes médicaux
-     */
-    public Map<String, Double> getPriceList() {
-        return medicalActDao.findAll()
-                .stream()
-                .map(medicalAct -> Map.entry(medicalAct.getName(), medicalAct.getPrice()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    /**
-     * Récupère le total du prix des factures
-     *
-     * @return une chaîne de caractères décrivant le total des factures
-     */
-    public double getTotalRevenue() {
-        return billDao.getTotalCost();
-    }
-} 
+}
