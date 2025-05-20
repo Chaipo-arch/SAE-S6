@@ -92,7 +92,12 @@ public class InventoryService {
             inv.setName(dto.name());
         }
         if (dto.quantity() != null && dto.quantity() >= 0) {
-            inv.setQuantity(dto.quantity());
+            int diff = dto.quantity() - inv.getQuantity();
+            if (diff > 0) {
+                inv.restock(diff);
+            } else if (diff < 0) {
+                inv.decrementStock(-diff);
+            }
         } else if (dto.quantity() != null) {
             throw new IllegalArgumentException("Quantity cannot be negative");
         }
@@ -178,7 +183,6 @@ public class InventoryService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Another supplier invoice with the same number already exists");
         }
-        System.out.println(supplierInvoiceDao.count());
     }
 
     /**
@@ -196,8 +200,7 @@ public class InventoryService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Item not found in inventory");
         }
-        inventory.setQuantity(inventory.getQuantity() + quantity);
-        inventory.setLastRestocked(new java.util.Date());
+        inventory.restock(quantity);
         inventoryDao.update(inventory);
         return inventory;
     }

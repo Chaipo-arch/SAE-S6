@@ -39,7 +39,6 @@ public class Inventory {
     /**
      * Current quantity in stock.
      */
-    @Setter
     @Column(name = "quantity")
     private Integer quantity = 0;
 
@@ -84,5 +83,32 @@ public class Inventory {
         this.unitPrice = dto.unitPrice();
         this.reorderLevel = dto.reorderLevel();
         this.lastRestocked = new Date();
+        validateInvariants();
     }
+
+    // --- DDD: Méthodes métier et encapsulation ---
+
+    public void restock(int amount) {
+        if (amount <= 0) throw new IllegalArgumentException("Restock amount must be positive");
+        this.quantity += amount;
+        this.lastRestocked = new Date();
+        validateInvariants();
+    }
+
+    public void decrementStock(int amount) {
+        if (amount <= 0) throw new IllegalArgumentException("Decrement amount must be positive");
+        if (amount > this.quantity) throw new IllegalArgumentException("Not enough stock");
+        this.quantity -= amount;
+        validateInvariants();
+    }
+
+    public boolean isBelowReorderLevel() {
+        return reorderLevel != null && quantity != null && quantity <= reorderLevel;
+    }
+
+    private void validateInvariants() {
+        if (quantity != null && quantity < 0) throw new IllegalStateException("Quantity cannot be negative");
+        if (reorderLevel != null && reorderLevel < 0) throw new IllegalStateException("Reorder level cannot be negative");
+    }
+
 }

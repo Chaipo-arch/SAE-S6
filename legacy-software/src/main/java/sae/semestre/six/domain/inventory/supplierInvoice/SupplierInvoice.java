@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.HashSet;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /**
  * Entity representing a supplier invoice.
@@ -13,6 +14,7 @@ import lombok.Getter;
  */
 @Entity
 @Getter
+@NoArgsConstructor
 @Table(name = "supplier_invoices")
 public class SupplierInvoice {
 
@@ -46,13 +48,6 @@ public class SupplierInvoice {
         this.supplierName = invoice.supplierName();
         this.invoiceDate = invoice.invoiceDate() == null ? new Date() : invoice.invoiceDate();
         this.totalAmount = invoice.totalAmount();
-    }
-
-    /**
-     * Default constructor for JPA.
-     */
-    public SupplierInvoice() {
-
     }
 
     /**
