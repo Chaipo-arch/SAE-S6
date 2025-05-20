@@ -1,5 +1,8 @@
 package sae.semestre.six.domain.prescription;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Setter;
 import lombok.Getter;
 import lombok.Setter;
 import sae.semestre.six.domain.patient.Patient;
@@ -14,6 +17,8 @@ import java.util.List;
  * Contains information about the patient, prescribed medicines, notes, cost, and audit fields.
  */
 @Entity
+@Builder
+@AllArgsConstructor
 @Getter
 @Table(name = "prescriptions")
 public class Prescription {

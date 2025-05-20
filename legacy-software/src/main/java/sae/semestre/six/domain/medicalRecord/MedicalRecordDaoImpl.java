@@ -17,38 +17,34 @@ public class MedicalRecordDaoImpl extends AbstractHibernateDao<MedicalRecord, Lo
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public List<MedicalRecord> findByPatientId(Long patientId) {
         return getEntityManager()
-                .createQuery("FROM MedicalRecord WHERE patient.id = :patientId")
+                .createQuery("FROM MedicalRecord WHERE patient.id = :patientId", MedicalRecord.class)
                 .setParameter("patientId", patientId)
                 .getResultList();
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public List<MedicalRecord> findByDoctorId(Long doctorId) {
         return getEntityManager()
-                .createQuery("FROM MedicalRecord WHERE doctor.id = :doctorId")
+                .createQuery("FROM MedicalRecord WHERE doctor.id = :doctorId", MedicalRecord.class)
                 .setParameter("doctorId", doctorId)
                 .getResultList();
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public List<MedicalRecord> findByDateRange(Date startDate, Date endDate) {
         return getEntityManager()
-                .createQuery("FROM MedicalRecord WHERE recordDate BETWEEN :startDate AND :endDate")
+                .createQuery("FROM MedicalRecord WHERE recordDate BETWEEN :startDate AND :endDate", MedicalRecord.class)
                 .setParameter("startDate", startDate)
                 .setParameter("endDate", endDate)
                 .getResultList();
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public List<MedicalRecord> findByDiagnosis(String diagnosis) {
         return getEntityManager()
-                .createQuery("FROM MedicalRecord WHERE diagnosis LIKE :diagnosis")
+                .createQuery("FROM MedicalRecord WHERE diagnosis LIKE :diagnosis", MedicalRecord.class)
                 .setParameter("diagnosis", "%" + diagnosis + "%")
                 .getResultList();
     }
