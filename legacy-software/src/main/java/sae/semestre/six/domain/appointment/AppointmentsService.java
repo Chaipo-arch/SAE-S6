@@ -52,8 +52,7 @@ public class AppointmentsService {
 
         List<Appointment> doctorAppointments = appointmentDao.findByDoctorId(doctorId);
         boolean conflict = doctorAppointments.stream()
-                .anyMatch(existing -> existing.getAppointmentDate().toLocalDate().equals(appointmentDateTime.toLocalDate()) &&
-                        existing.getAppointmentDate().getHour() == appointmentDateTime.getHour());
+                .anyMatch(appointment -> appointment.isSameDate(appointmentDateTime));
 
         if (conflict) {
             throw new InvalidDataException("Doctor is not available at this time");
@@ -67,7 +66,7 @@ public class AppointmentsService {
         }
 
         LocalTime time = appointmentDateTime.toLocalTime();
-        if (time.isBefore(LocalTime.of(9, 0)) || time.isAfter(LocalTime.of(17, 0))) {
+        if (Appointment.isWorkingHours(time)) {
             throw new InvalidDataException("Appointments only available between 9 AM and 5 PM");
         }
 

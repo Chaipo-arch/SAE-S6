@@ -12,6 +12,7 @@ import sae.semestre.six.domain.room.Room;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Entity
@@ -88,6 +89,15 @@ public class Appointment {
         if(this.doctor == doctor) return;
         this.doctor = doctor;
         doctor.addAppointment(this);
+    }
+
+    public boolean isSameDate(LocalDateTime localDateTime) {
+        return appointmentDate.toLocalDate().equals(localDateTime.toLocalDate()) &&
+                appointmentDate.getHour() == localDateTime.getHour();
+    }
+
+    public static boolean isWorkingHours(LocalTime time) {
+        return time.isBefore(LocalTime.of(9, 0)) || time.isAfter(LocalTime.of(17, 0));
     }
 
 
