@@ -17,9 +17,12 @@ public class DoctorController {
 
     private final DoctorDao doctorDao;
 
+    private final DoctorService doctorService;
+
     @Autowired
-    public DoctorController(DoctorDao doctorDao) {
+    public DoctorController(DoctorDao doctorDao, DoctorService doctorService) {
         this.doctorDao = doctorDao;
+        this.doctorService = doctorService;
     }
 
     // Endpoint pour récupérer tous les docteurs
@@ -34,28 +37,25 @@ public class DoctorController {
     // Endpoint pour rechercher un docteur par son numéro unique
     @GetMapping("/number/{doctorNumber}")
     public ResponseEntity<DoctorDTO> getDoctorByNumber(@PathVariable String doctorNumber) {
-        return doctorDao.findByDoctorNumber(doctorNumber)
-                .map(doctor -> new DoctorDTO(doctor))
-                .map(dto -> ResponseEntity.ok(dto))
-                .orElse(ResponseEntity.notFound().build());
+        Optional<DoctorDTO> doctorDTO = doctorService.getDoctorByNumber(doctorNumber);
+        if(doctorDTO.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(doctorDTO.get());
     }
 
 
     // Endpoint pour rechercher des docteurs par spécialisation
     @GetMapping("/specialization/{specialization}")
     public List<DoctorDTO> getDoctorsBySpecialization(@PathVariable String specialization) {
-        return doctorDao.findBySpecialization(specialization).stream()
-                .map(doctor -> new DoctorDTO(doctor))
-                .collect(Collectors.toList());
+        return doctorService.getDoctorsBySpecialization(specialization);
     }
 
 
     // Endpoint pour rechercher des docteurs par département
     @GetMapping("/department/{department}")
     public List<DoctorDTO> getDoctorsByDepartment(@PathVariable String department) {
-        return doctorDao.findByDepartment(department).stream()
-                .map(doctor -> new DoctorDTO(doctor))
-                .collect(Collectors.toList());
+        return doctorService.getDoctorsByDepartment(department);
     }
 
 
