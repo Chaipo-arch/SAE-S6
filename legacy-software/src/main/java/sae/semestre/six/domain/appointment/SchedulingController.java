@@ -37,8 +37,6 @@ public class SchedulingController {
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentDateTime) {
         appointmentsService.create(doctorId,patientId,roomId,appointmentDateTime);
-
-        // Envoyer un email de confirmation
         return "Appointment scheduled successfully";
     }
 
