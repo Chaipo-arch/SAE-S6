@@ -63,6 +63,10 @@ public class Doctor {
         appointment.addDoctor(this);
     }
 
+    public boolean isSpecialization(String specialization) {
+        return this.specialization.equals(specialization);
+    }
+
     
     public Doctor() {
     }

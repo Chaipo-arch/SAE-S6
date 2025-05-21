@@ -93,17 +93,17 @@ public class Room {
             throw new InvalidDataException("Error: Only surgeons can use surgery rooms");
         }
 
-        if (getCurrentPatientCount() >= getCapacity()) {
+        if (currentPatientCount >= capacity) {
             throw new InvalidDataException("Error: Room is at full capacity");
         }
 
-        setCurrentPatientCount(getCurrentPatientCount() + 1);
+        setCurrentPatientCount(currentPatientCount + 1);
         appointments.add(appointment);
         appointment.assignRoom(this);
     }
 
     public boolean canSurgery(Appointment appointment) {
-        return getType().equals("SURGERY") && !appointment.getDoctor().getSpecialization().equals("SURGEON");
+        return getType().equals("SURGERY") && !appointment.getDoctor().isSpecialization("SURGEON");
 
     }
     
