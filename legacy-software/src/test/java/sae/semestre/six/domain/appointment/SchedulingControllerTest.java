@@ -8,8 +8,11 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.doctor.DoctorDao;
+import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.domain.room.RoomDao;
+import sae.semestre.six.exception.InvalidDataException;
+import sae.semestre.six.exception.ResourceNotFoundException;
 import sae.semestre.six.mail.EmailService;
 
 import java.time.LocalDate;
@@ -18,7 +21,9 @@ import java.time.LocalTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+
 
 class SchedulingControllerTest {
 
@@ -35,11 +40,16 @@ class SchedulingControllerTest {
     private EmailService emailService;
 
     @InjectMocks
+    private AppointmentsService appointmentsService;
+
     private SchedulingController controller;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        controller= new SchedulingController(appointmentsService);
+
         // No manual instantiation: Mockito will inject mocks into controller
     }
 
@@ -52,14 +62,18 @@ class SchedulingControllerTest {
         long roomID = 0L;
         Doctor doctor = new Doctor();
         doctor.setEmail("doctor@example.com");
+
         when(doctorDao.findById(doctorId)).thenReturn(doctor);
 
         Appointment existingAppointment = new Appointment();
         existingAppointment.setAppointmentDate(targetDate);
+        doctor.addAppointment(existingAppointment);
         when(appointmentDao.findByDoctorId(doctorId))
                 .thenReturn(List.of(existingAppointment));
+        when(patientDao.findById(patientId)).thenReturn(new Patient());
 
-        String result = controller.scheduleAppointment(doctorId, patientId, roomID,targetDate);
+
+        String result = assertThrows(InvalidDataException.class,()->controller.scheduleAppointment(doctorId, patientId, roomID,targetDate)).getMessage();
 
         assertEquals("Doctor is not available at this time", result);
         verify(appointmentDao).findByDoctorId(doctorId);
@@ -77,7 +91,7 @@ class SchedulingControllerTest {
         when(appointmentDao.findByDoctorId(doctorId))
                 .thenReturn(List.of(appointment));
 
-        List<LocalDateTime> availableSlots = controller.getAvailableSlots(doctorId, date);
+        List<LocalDateTime> availableSlots = controller.getAvailableSlots(doctorId, date).getBody();
 
         assertEquals(8, availableSlots.size()); // De 9 à 17, sauf 10h
         assertEquals(LocalDateTime.of(date, LocalTime.of(9, 0)), availableSlots.get(0));

@@ -3,6 +3,8 @@ package sae.semestre.six.domain.room;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
+import sae.semestre.six.exception.InvalidDataException;
+
 import java.util.Set;
 import java.util.HashSet;
 
@@ -86,16 +88,18 @@ public class Room {
     }
 
     public void assignAppointment(Appointment appointment) {
+        if(appointments.contains(appointment)) return;
         if (canSurgery(appointment)) {
-            throw new RuntimeException("Error: Only surgeons can use surgery rooms");
+            throw new InvalidDataException("Error: Only surgeons can use surgery rooms");
         }
 
         if (getCurrentPatientCount() >= getCapacity()) {
-            throw new RuntimeException("Error: Room is at full capacity");
+            throw new InvalidDataException("Error: Room is at full capacity");
         }
 
         setCurrentPatientCount(getCurrentPatientCount() + 1);
-        appointment.setRoomNumber(roomNumber);
+        appointments.add(appointment);
+        appointment.assignRoom(this);
     }
 
     public boolean canSurgery(Appointment appointment) {

@@ -9,6 +9,9 @@ import lombok.Builder;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 
 @Setter
@@ -47,8 +50,18 @@ public class Doctor {
     @Column(name = "department")
     private String department;
 
+    @Builder.Default
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY)
     private Set<Appointment> appointments;
+
+    public void addAppointment(Appointment appointment) {
+        if(appointments ==null) {
+            appointments = new HashSet<>();
+        }
+        if(appointments.contains(appointment)) return;
+        this.appointments.add(appointment);
+        appointment.addDoctor(this);
+    }
 
     
     public Doctor() {

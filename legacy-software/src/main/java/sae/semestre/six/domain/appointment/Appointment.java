@@ -36,6 +36,7 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
+
     @Getter
     @Setter
     @ManyToOne
@@ -67,11 +68,27 @@ public class Appointment {
     @Column(name = "room_number")
     private String roomNumber;
 
-    
+
+
     public Appointment() {
     }
 
-
-    public void save() {
+    public void assignRoom(Room room) {
+        this.room = room;
+        room.assignAppointment(this);
     }
+
+    public void addPatient(Patient patient) {
+        if(this.patient == patient) return;
+        this.patient = patient;
+        patient.addAppointment(this);
+    }
+
+    public void addDoctor(Doctor doctor) {
+        if(this.doctor == doctor) return;
+        this.doctor = doctor;
+        doctor.addAppointment(this);
+    }
+
+
 }
