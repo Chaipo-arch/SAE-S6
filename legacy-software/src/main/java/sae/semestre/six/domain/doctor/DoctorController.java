@@ -17,9 +17,12 @@ public class DoctorController {
 
     private final DoctorDao doctorDao;
 
+    private final DoctorService doctorService;
+
     @Autowired
-    public DoctorController(DoctorDao doctorDao) {
+    public DoctorController(DoctorDao doctorDao, DoctorService doctorService) {
         this.doctorDao = doctorDao;
+        this.doctorService = doctorService;
     }
 
     // Endpoint pour récupérer tous les docteurs
@@ -43,10 +46,8 @@ public class DoctorController {
 
     // Endpoint pour rechercher des docteurs par spécialisation
     @GetMapping("/specialization/{specialization}")
-    public List<DoctorDTO> getDoctorsBySpecialization(@PathVariable String specialization) {
-        return doctorDao.findBySpecialization(specialization).stream()
-                .map(doctor -> new DoctorDTO(doctor))
-                .collect(Collectors.toList());
+    public ResponseEntity<List<DoctorDTO>> getDoctorsBySpecialization(@PathVariable String specialization) {
+        return ResponseEntity.ok(doctorService.getDoctorsBySpecialization(specialization));
     }
 
 
@@ -62,7 +63,7 @@ public class DoctorController {
     // Endpoint pour ajouter un nouveau docteur ou mettre à jour un docteur existant
     @PostMapping
     public ResponseEntity<?> saveDoctor(@Valid @RequestBody Doctor doctor) {
-        doctorDao.save(doctor);
+        doctorService.createDoctor(doctor);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(doctor);

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -21,13 +23,17 @@ import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@AutoConfigureMockMvc
 @ExtendWith(MockitoExtension.class)
 public class DoctorControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
 
     @Mock
     private DoctorDao doctorDao;
+
+    private DoctorService doctorService;
 
     @InjectMocks
     private DoctorController doctorController;
@@ -36,7 +42,8 @@ public class DoctorControllerTest {
 
     @BeforeEach
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(doctorController).build();
+        doctorService = new DoctorService(doctorDao);
+        doctorController = new DoctorController(doctorDao,doctorService);
     }
 
     @Test
@@ -132,7 +139,7 @@ public class DoctorControllerTest {
         when(doctorDao.findBySpecialization("Cardiologie")).thenReturn(doctors);
 
         // Act
-        List<DoctorDTO> result = doctorController.getDoctorsBySpecialization("Cardiologie");
+        List<DoctorDTO> result = doctorController.getDoctorsBySpecialization("Cardiologie").getBody();
 
         // Assert
         assertEquals(2, result.size());

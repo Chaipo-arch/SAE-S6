@@ -41,7 +41,7 @@ public class PatientHistoryDaoImpl extends AbstractHibernateDao<PatientHistory, 
                 "OR LOWER(ph.symptoms) LIKE :keyword " +
                 "OR LOWER(ph.notes) LIKE :keyword " +
                 "OR EXISTS (SELECT 1 FROM ph.treatments t WHERE LOWER(t.name) LIKE :keyword) " +
-                "OR EXISTS (SELECT 1 FROM ph.prescriptions p WHERE LOWER(p.medicines) LIKE :keyword)" +
+                "OR EXISTS (SELECT 1 FROM ph.prescriptions.medicines m WHERE LOWER(m.name) LIKE :keyword)" +
                 ") " +
                 "AND ph.visitDate BETWEEN :startDate AND :endDate";
             

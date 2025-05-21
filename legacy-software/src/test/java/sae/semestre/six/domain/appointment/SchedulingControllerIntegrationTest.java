@@ -77,10 +77,11 @@ public class SchedulingControllerIntegrationTest {
         patient = new Patient();
         // Définir les propriétés du patient directement dans la base de données
         entityManager.createNativeQuery(
-                        "INSERT INTO patients (patient_number, first_name, last_name) VALUES (?1, ?2, ?3)")
+                        "INSERT INTO patients (patient_number, first_name, last_name, email) VALUES (?1, ?2, ?3,?4)")
                 .setParameter(1, "TEST-PAT-001")
                 .setParameter(2, "John")
                 .setParameter(3, "Doe")
+                .setParameter(4,"e@e.com")
                 .executeUpdate();
 
         // Récupérer le patient créé

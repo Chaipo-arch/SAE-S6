@@ -13,6 +13,7 @@ import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.prescription.Prescription;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -116,7 +117,7 @@ public class PatientHistoryDaoTest {
         LabResult labResult = LabResult.builder().testName("Test").patientHistory(patientHistory).build();
         Appointment appointment = Appointment.builder().appointmentNumber("App011").doctor(doctor)
                 .patient(testPatient).patientHistory(patientHistory).description("DescriptionApp")
-                .status("CONFIRMÉ").build();
+                .status("CONFIRMÉ").appointmentDate(LocalDateTime.now()).build();
         Bill bill = Bill.builder().billNumber("Bil011")
                 .patientHistory(patientHistory).patient(testPatient)
                 .totalAmount(10.0).status("EN ATTENTE").createdDate(new Date()).build();
