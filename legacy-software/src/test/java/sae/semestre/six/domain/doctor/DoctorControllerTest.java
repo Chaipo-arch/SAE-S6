@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 @ExtendWith(MockitoExtension.class)
 public class DoctorControllerTest {
 
@@ -29,14 +32,17 @@ public class DoctorControllerTest {
     @Mock
     private DoctorDao doctorDao;
 
-    @InjectMocks
+    private DoctorService doctorService;
+
     private DoctorController doctorController;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     public void setup() {
-        mockMvc = MockMvcBuilders.standaloneSetup(doctorController).build();
+        doctorService = new DoctorService(doctorDao);
+        doctorController = new DoctorController(doctorDao,doctorService);
+        //mockMvc = MockMvcBuilders.standaloneSetup(doctorController).build();
     }
 
     @Test
