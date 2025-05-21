@@ -3,6 +3,7 @@ package sae.semestre.six.domain.billing;
 import jakarta.persistence.NoResultException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,8 +32,10 @@ public class BillingController {
         try {
             billingService.processBill(patientId, doctorId, treatments);
             return ResponseEntity.ok("Bill processed successfully");
+        } catch (NoResultException e) {
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -106,5 +109,10 @@ public class BillingController {
     @GetMapping("/pending")
     public ResponseEntity<List<String>> getPendingBills() {
         return ResponseEntity.ok(billingService.getPendingBillsIds());
+    }
+
+    @GetMapping("/integrity")
+    public ResponseEntity<Boolean> checkBillIntegrity(@NonNull @RequestParam String billNumber) {
+        return ResponseEntity.ok(billingService.checkBillIntegrity(billNumber));
     }
 } 

@@ -1,6 +1,5 @@
 package sae.semestre.six.domain.billing;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
@@ -17,7 +16,6 @@ import sae.semestre.six.file.FileHandler;
 import sae.semestre.six.mail.EmailService;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,7 +62,7 @@ public class BillingService {
 
         // Récupère et écrit les informations dans la facture
         String message = buildBillFileContents(bill, Long.parseLong(patientId), Long.parseLong(doctorId), treatments);
-        File file = Path.of(BILLS_FOLDER).resolve(bill.getBillNumber() + ".txt").toFile();
+        File file = getFileForBillNumber(bill.getBillNumber());
         fileHandler.writeToFile(file.getAbsolutePath(), message);
 
         // Génère un hash pour le contenu du fichier et l'ajoute aux informations de la facture
@@ -117,8 +115,9 @@ public class BillingService {
 
     /**
      * Ajoute le prix d'un acte médical
+     *
      * @param treatment le nom de l'acte médical
-     * @param price le prix (unitaire) de l'acte
+     * @param price     le prix (unitaire) de l'acte
      */
     public void addPrice(String treatment, double price) {
         MedicalAct medicalAct = MedicalAct.builder().name(treatment).price(price).build();
@@ -133,6 +132,53 @@ public class BillingService {
                 .stream()
                 .map(b -> b.getId().toString())
                 .toList();
+    }
+
+    /**
+     * Vérifie l'intégrité du fichier de facture
+     * @param billNumber le numéro de la facture
+     * @return true si l'intégrité est préservée, false sinon
+     */
+    public boolean checkBillIntegrity(String billNumber) {
+        // On récupère la facture correspondante
+        Bill bill = billDao.findByBillNumber(billNumber);
+        if (bill == null) {
+            throw new NoSuchElementException("Bill number " + billNumber + " not found");
+        }
+
+        // Et le contenu du fichier
+        String fileContent = getBillFileContents(bill);
+        System.out.println("FILE CONTENT : " + fileContent);
+
+        // On récupère le salt et le hash associé à la facture
+        HexFormat format = HexFormat.of();
+        byte[] salt = format.parseHex(bill.getHashSalt());
+        byte[] hash = format.parseHex(bill.getHash());
+
+        System.out.println("SALT : " + Arrays.toString(salt));
+        System.out.println("HASH : " + Arrays.toString(hash));
+
+        // On vérifie l'intégrité
+        boolean verified = billingSecurityService.verify(fileContent, hash, salt);
+        System.out.println("VERIFIED : " + verified);
+        return verified;
+    }
+
+    /**
+     * @param bill la facture à récupérer
+     * @return le contenu du fichier de facture
+     */
+    protected String getBillFileContents(@NonNull Bill bill) {
+        File file = getFileForBillNumber(bill.getBillNumber());
+        return fileHandler.readFromFile(file.getAbsolutePath());
+    }
+
+    /**
+     * @param billNumber le numéro de facture
+     * @return le fichier contenant (normalement) les informations de la facture
+     */
+    protected File getFileForBillNumber(@NonNull String billNumber) {
+        return new File(BILLS_FOLDER, billNumber + ".txt");
     }
 
     /**
@@ -162,7 +208,7 @@ public class BillingService {
      * @param treatments les traitements facturables
      * @return les éléments facturables par leurs noms
      */
-    private List<Billable> findBillablesByName(String[] treatments) {
+    private List<Billable> findBillablesByName(@NonNull String[] treatments) {
         return new ArrayList<>(Arrays.asList(treatments))
                 .stream()
                 .map(this::findBillableByName)
@@ -173,7 +219,7 @@ public class BillingService {
      * @param billableName le nom de l'élément facturable
      * @return le nom de l'élément facturable
      */
-    private Billable findBillableByName(String billableName) {
+    private Billable findBillableByName(@NonNull String billableName) {
         final String prescriptionBeginning = "PRESCRIPTION_";
         boolean isPrescription = billableName.startsWith(prescriptionBeginning);
 
