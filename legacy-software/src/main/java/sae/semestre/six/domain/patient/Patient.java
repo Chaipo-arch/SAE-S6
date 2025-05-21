@@ -1,18 +1,16 @@
 package sae.semestre.six.domain.patient;
 
 import lombok.Setter;
-import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
 import sae.semestre.six.exception.InvalidDataException;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,7 +50,7 @@ public class Patient {
 
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
-    private Date dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @Column(name = "gender")
     @Pattern(regexp = "^[HF]$",message = "Le genre doit être H ou F.")

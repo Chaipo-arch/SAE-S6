@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.exception.InvalidDataException;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -33,9 +34,10 @@ public class PatientHistoryControllerTest {
 
     @BeforeEach
     void setUp() {
+        LocalDate localDate = LocalDate.now();
         testPatient = Patient.builder().patientNumber("PAT123").firstName("Marie")
                 .lastName("Curie").gender("F").phoneNumber("0600000000").email("e@e.e")
-                .dateOfBirth(new GregorianCalendar(1980, Calendar.JUNE, 1).getTime())
+                .dateOfBirth(localDate.minusYears(40))
                 .build();
         entityManager.persist(testPatient);
     }

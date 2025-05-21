@@ -13,6 +13,7 @@ import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.prescription.Prescription;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,16 +29,17 @@ public class PatientHistoryDaoTest {
     @Autowired
     private List<PatientHistoryDao> daoImplementations;
 
-     @PersistenceContext
+    @PersistenceContext
     private EntityManager entityManager;
 
     private Patient testPatient;
 
     @BeforeEach
     void beforeEach() {
+        LocalDate localDate = LocalDate.now();
         testPatient = Patient.builder().patientNumber("PAT123").firstName("Marie")
                 .lastName("Curie").gender("F").phoneNumber("0600000000").email("e@e.com")
-                .dateOfBirth(new GregorianCalendar(1980, Calendar.JUNE, 1).getTime())
+                .dateOfBirth(localDate.minusYears(40))
                 .build();
         entityManager.persist(testPatient);
     }
@@ -107,6 +109,7 @@ public class PatientHistoryDaoTest {
 
     @Test
     void testFindDataForHistoryEntry() {
+        LocalDateTime localDate = LocalDate.now().atTime(10,0);
         PatientHistory patientHistory = new PatientHistoryInformation(new Date(),
                 "Diagnosis","Symptoms","Notes").toPatientHistory(testPatient);
         entityManager.persist(patientHistory);
