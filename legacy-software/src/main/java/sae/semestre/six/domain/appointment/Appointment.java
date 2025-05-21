@@ -59,6 +59,7 @@ public class Appointment {
     @Column(name = "status")
     private String status;
 
+    @Getter
     @Column(name = "description")
     private String description;
 
@@ -71,21 +72,6 @@ public class Appointment {
     }
 
 
-    public String getAppointmentNumber() {
-        return appointmentNumber;
+    public void save() {
     }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-
-    public String getStatus() {
-        return status;
-    }
-
 }
