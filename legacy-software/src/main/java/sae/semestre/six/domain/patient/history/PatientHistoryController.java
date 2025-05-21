@@ -2,6 +2,7 @@ package sae.semestre.six.domain.patient.history;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -88,7 +89,7 @@ public class PatientHistoryController {
     @PostMapping
     public ResponseEntity<String> createPatientHistory(@RequestParam Long idPatient,@RequestBody PatientHistoryInformation patientHistoryInformation) {
         patientHistoryService.createPatientHistory(idPatient,patientHistoryInformation);
-        return ResponseEntity.ok("Patient history created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Patient history created");
     }
 
 } 

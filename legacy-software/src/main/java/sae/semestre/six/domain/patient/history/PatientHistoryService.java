@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.exception.InvalidDataException;
+import sae.semestre.six.exception.ResourceNotFoundException;
 
 import java.util.Date;
 import java.util.List;
@@ -62,7 +63,7 @@ public class PatientHistoryService {
 
         PatientHistory patientHistory = patientHistoryDao.findById(idHistoryPatient);
         if(patientHistory == null) {
-            throw new InvalidDataException("The patient id is incorrect");
+            throw new ResourceNotFoundException("The patient history is not found");
         }
         HistoryEntry historyEntry = patientHistoryDao.getHistoryEntryData(
                 idPrescription, idTreatment, idLabResults, idBill, idAppointment);
@@ -85,7 +86,7 @@ public class PatientHistoryService {
     public void createPatientHistory(Long idPatient, PatientHistoryInformation info) {
         Patient patient = patientDao.findById(idPatient);
         if(patient == null) {
-            throw new InvalidDataException("The patient id is incorrect");
+            throw new ResourceNotFoundException("The patient is not found");
         }
         if(patientHistoryDao.findForPatient(idPatient) != null) {
             throw new InvalidDataException("The history is already created for this patient");
