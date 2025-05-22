@@ -1,5 +1,7 @@
 package sae.semestre.six.domain.room;
 
+import lombok.Builder;
+import lombok.Getter;
 import sae.semestre.six.domain.appointment.Appointment;
 
 import jakarta.persistence.*;
@@ -8,14 +10,17 @@ import sae.semestre.six.exception.InvalidDataException;
 import java.util.Set;
 import java.util.HashSet;
 
+@Builder(builderClassName = "RoomBuilder")
 @Entity
 @Table(name = "rooms")
 public class Room {
-    
+
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    @Getter
     @Column(name = "room_number", unique = true)
     private String roomNumber;
     
@@ -30,55 +35,19 @@ public class Room {
     
     @Column(name = "is_occupied")
     private Boolean isOccupied = false;
-    
+
+    @Builder.Default
     @OneToMany(mappedBy = "room")
     private Set<Appointment> appointments = new HashSet<>();
-    
-    
+
+    @Getter
     @Column(name = "current_patient_count")
     private Integer currentPatientCount = 0;
-    
-    
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public String getRoomNumber() {
-        return roomNumber;
-    }
-
-    public String getType() {
-        return type;
-    }
-    
-    public void setType(String type) {
-        this.type = type;
-    }
-    
-    public Integer getCapacity() {
-        return capacity;
-    }
 
     public RoomAvailabilityInformation getAvailability() {
-        return  new RoomAvailabilityInformation(getRoomNumber(),
-                getCapacity(),getCurrentPatientCount(),
+        return  new RoomAvailabilityInformation(roomNumber,
+                capacity,currentPatientCount,
                 canAcceptPatient());
-    }
-
-    public Set<Appointment> getAppointments() {
-        return appointments;
-    }
-    
-    public void setAppointments(Set<Appointment> appointments) {
-        this.appointments = appointments;
-    }
-    
-    public Integer getCurrentPatientCount() {
-        return currentPatientCount;
     }
     
     public void setCurrentPatientCount(Integer currentPatientCount) {
@@ -89,7 +58,8 @@ public class Room {
 
     public void assignAppointment(Appointment appointment) {
         if(appointments.contains(appointment)) return;
-        if (canSurgery(appointment)) {
+
+        if (isOfType("SURGERY") && !appointment.getDoctor().isSpecialization("SURGEON")) {
             throw new InvalidDataException("Error: Only surgeons can use surgery rooms");
         }
 
@@ -102,13 +72,15 @@ public class Room {
         appointment.assignRoom(this);
     }
 
-    public boolean canSurgery(Appointment appointment) {
-        return getType().equals("SURGERY") && !appointment.getDoctor().isSpecialization("SURGEON");
-
+    private boolean isOfType(String type) {
+        return this.type.equals(type);
     }
-    
     
     public boolean canAcceptPatient() {
         return currentPatientCount < capacity && !isOccupied;
+    }
+
+    public static class RoomBuilder {
+
     }
 }

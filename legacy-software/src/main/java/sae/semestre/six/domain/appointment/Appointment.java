@@ -65,7 +65,7 @@ public class Appointment {
     @Column(name = "description")
     private String description;
 
-    @Setter
+    @Getter
     @Column(name = "room_number")
     private String roomNumber;
 
@@ -75,18 +75,20 @@ public class Appointment {
     }
 
     public void assignRoom(Room room) {
+        if(room == null || this.room == room) return;
         this.room = room;
+        this.roomNumber = room.getRoomNumber();
         room.assignAppointment(this);
     }
 
     public void addPatient(Patient patient) {
-        if(this.patient == patient) return;
+        if(patient ==  null || this.patient == patient) return;
         this.patient = patient;
         patient.addAppointment(this);
     }
 
     public void addDoctor(Doctor doctor) {
-        if(this.doctor == doctor) return;
+        if(doctor == null || this.doctor == doctor) return;
         this.doctor = doctor;
         doctor.addAppointment(this);
     }

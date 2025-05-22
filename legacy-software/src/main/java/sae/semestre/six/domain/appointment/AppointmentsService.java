@@ -70,13 +70,10 @@ public class AppointmentsService {
             throw new InvalidDataException("Appointments only available between 9 AM and 5 PM");
         }
 
-        Appointment appt = new Appointment();
-        appt.addDoctor(doctor);
-        appt.addPatient(patient);
-        appt.setRoomNumber(room.getRoomNumber());
-        appt.setAppointmentDate(appointmentDateTime);
-        appt.setStatus("SCHEDULED");
-        appt.setAppointmentNumber("APPT" + System.currentTimeMillis());
+        Appointment appt = Appointment.builder().doctor(doctor).patient(patient)
+                .roomNumber(room.getRoomNumber()).appointmentDate(appointmentDateTime)
+                .status("SCHEDULED").appointmentNumber("APPT" + System.currentTimeMillis()).build();
+
         appointmentDao.save(appt);
 
         emailService.sendEmail(
