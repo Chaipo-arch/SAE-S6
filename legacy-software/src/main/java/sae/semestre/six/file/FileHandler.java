@@ -21,13 +21,8 @@ public class FileHandler {
      * @param content le contenu à écrire
      */
     public void writeToFile(String file, String content) {
-        try {
-            createFileAndParentDirectories(file);
-
-            // Write contents to file
-            FileWriter fileWriter = new FileWriter(file, true);
+        try (FileWriter fileWriter = new FileWriter(file, true)) {
             fileWriter.write(content);
-            fileWriter.close();
         } catch (IOException e) {
             throw new RuntimeException("File" + file + " cannot be opened", e);
         }
@@ -39,11 +34,8 @@ public class FileHandler {
      * @param onWrite la fonction d'écriture dans le fichier
      */
     public void writeToFile(String file, Consumer<FileWriter> onWrite) {
-        try {
-            createFileAndParentDirectories(file);
-            FileWriter fileWriter = new FileWriter(file, true);
+        try (FileWriter fileWriter = new FileWriter(file, true)) {
             onWrite.accept(fileWriter);
-            fileWriter.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -77,7 +69,7 @@ public class FileHandler {
      * @param f le fichier à créer
      * @throws IOException s'il est impossible de créer les dossiers
      */
-    private void createFileAndParentDirectories(File f) throws IOException {
+    public void createFileAndParentDirectories(File f) throws IOException {
         // Create parent directories
         Files.createDirectories(f.toPath().getParent());
 

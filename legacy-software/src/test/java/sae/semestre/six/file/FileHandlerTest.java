@@ -8,7 +8,7 @@ import java.io.*;
 public class FileHandlerTest {
 
     @Test
-    void verifyStringIsWroteInFile() throws IOException {
+    void verifyStringIsWrittenInFile() throws IOException {
         FileHandler fileHandler = new FileHandler();
         File file = new File("RandomDFOKJSOPMFHSOFHDJDFHjdlsdkhgsd.txt");
         file.createNewFile();

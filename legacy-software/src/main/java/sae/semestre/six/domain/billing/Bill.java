@@ -45,6 +45,7 @@ public class Bill {
     private Doctor doctor;
 
     @Getter
+    @Setter
     @Column(name = "bill_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date billDate = new Date();
@@ -69,6 +70,7 @@ public class Bill {
     private Date lastModified = new Date();
 
     @Getter
+    @Setter
     @ManyToOne
     private PatientHistory patientHistory;
 
