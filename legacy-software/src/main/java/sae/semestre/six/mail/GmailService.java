@@ -26,6 +26,10 @@ public class GmailService implements EmailService {
 
         this.mailSender = sender;
     }
+
+    public GmailService(MailSender sender) {
+        this.mailSender = sender;
+    }
     @Override
     public void sendEmail(String to, String subject, String body) {
         try {

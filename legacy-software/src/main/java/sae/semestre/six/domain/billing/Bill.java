@@ -1,19 +1,24 @@
 package sae.semestre.six.domain.billing;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.history.PatientHistory;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Représente une facture
  */
 @Entity
 @Table(name = "bills")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Bill {
 
     @Getter
@@ -49,7 +54,6 @@ public class Bill {
     @Column(name = "total_amount")
     private Double totalAmount = 0.0;
 
-
     @Column(name = "status")
     @Convert(converter = BillStatusConverter.class)
     private BillStatus status = BillStatus.PENDING;
@@ -58,13 +62,13 @@ public class Bill {
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<BillDetail> billDetails = new HashSet<>();
 
-
     @Column(name = "created_date")
     private Date createdDate = new Date();
 
     @Column(name = "last_modified")
     private Date lastModified = new Date();
 
+    @Getter
     @ManyToOne
     private PatientHistory patientHistory;
 
@@ -121,4 +125,4 @@ public class Bill {
         }
         this.setTotalAmount(total);
     }
-} 
+}

@@ -1,10 +1,13 @@
 package sae.semestre.six.domain.patient.history;
 
 import jakarta.persistence.*;
+import lombok.Builder;
+
 import java.util.Date;
 
 @Entity
 @Table(name = "treatments")
+@Builder
 public class Treatment {
     
     @Id
@@ -15,10 +18,10 @@ public class Treatment {
     private String name;
     
     @ManyToOne
-    @JoinColumn(name = "patient_history_id")
+    @JoinColumn(name = "patient_history_id",nullable = false)
     private PatientHistory patientHistory;
     
-    @Column(name = "treatment_date")
+    @Column(name = "treatment_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date treatmentDate;
     

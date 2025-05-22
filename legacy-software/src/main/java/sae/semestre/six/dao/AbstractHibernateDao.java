@@ -2,6 +2,8 @@ package sae.semestre.six.dao;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
@@ -44,7 +46,8 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
             throw e;
         }
     }
-    
+
+    @Transactional
     @Override
     public void save(T entity) {
         try {
@@ -83,9 +86,10 @@ public abstract class AbstractHibernateDao<T, ID extends Serializable> implement
         }
     }
 
-    public int getSize() {
-        return entityManager
-                .createQuery("SELECT COUNT FROM " + persistentClass.getName())
-                .getFirstResult();
+    @Override
+    public int count() {
+        return ((Number) entityManager
+                .createQuery("SELECT COUNT(e) FROM " + persistentClass.getName() + " e")
+                .getSingleResult()).intValue();
     }
 }
