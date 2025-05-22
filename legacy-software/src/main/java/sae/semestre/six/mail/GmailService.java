@@ -1,5 +1,6 @@
 package sae.semestre.six.mail;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -12,6 +13,8 @@ public class GmailService implements EmailService {
 
     private final MailSender mailSender;
 
+    // Autowired pour forcer la construction du bean sur ce constructeur
+    @Autowired(required = true)
     public GmailService() {
 
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
@@ -28,9 +31,14 @@ public class GmailService implements EmailService {
         this.mailSender = sender;
     }
 
+    /**
+     * Utilisé pour les tests
+     * @param sender un sender mock
+     */
     public GmailService(MailSender sender) {
         this.mailSender = sender;
     }
+
     @Override
     public void sendEmail(String to, String subject, String body) {
         try {
