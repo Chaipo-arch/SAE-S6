@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -188,6 +187,7 @@ class BillingControllerTest {
     /**
      * Vérifie que le code de retour correspond à une réussite et que le corps de la réponse est
      * non-null
+     *
      * @param responseEntity l'entité de réponse HTTP à tester
      */
     private void assertSuccessAndBodyNotNull(ResponseEntity<?> responseEntity) {

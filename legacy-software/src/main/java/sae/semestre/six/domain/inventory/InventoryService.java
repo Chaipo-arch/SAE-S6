@@ -1,6 +1,7 @@
 package sae.semestre.six.domain.inventory;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sae.semestre.six.domain.inventory.supplierInvoice.*;
@@ -8,7 +9,6 @@ import sae.semestre.six.mail.EmailService;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,8 +17,11 @@ import java.util.stream.Collectors;
  * Handles inventory CRUD, price history, supplier invoices, and reorder logic.
  */
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class InventoryService {
+
+    @Value("${sae.semestre.six.files.order}")
+    private String ORDERS_FILE = "C:\\hospital\\orders.txt";
 
     private final InventoryDao inventoryDao;
     private final SupplierInvoiceDao supplierInvoiceDao;
@@ -40,7 +43,8 @@ public class InventoryService {
         Inventory existing = null;
         try {
             existing = inventoryDao.findByItemCode(dto.itemCode());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         if (existing != null) {
             throw new IllegalArgumentException("Item already exists");
         }
@@ -79,7 +83,7 @@ public class InventoryService {
      * Updates an existing inventory item.
      *
      * @param itemCode The unique item code
-     * @param dto The inventory data transfer object
+     * @param dto      The inventory data transfer object
      * @return The updated InventoryDTO
      * @throws IllegalArgumentException if invalid data is provided
      */
@@ -215,7 +219,7 @@ public class InventoryService {
         for (Inventory item : lowStockItems) {
             int reorderQuantity = item.getReorderLevel() * 2;
 
-            try (FileWriter fw = new FileWriter("C:\\hospital\\orders.txt", true)) {
+            try (FileWriter fw = new FileWriter(ORDERS_FILE, true)) {
                 fw.write("REORDER: " + item.getItemCode() + ", Quantity: " + reorderQuantity + "\n");
             } catch (IOException e) {
                 System.err.println("Error writing to file: " + e.getMessage());

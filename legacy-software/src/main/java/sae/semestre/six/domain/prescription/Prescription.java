@@ -1,15 +1,14 @@
 package sae.semestre.six.domain.prescription;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Setter;
 import lombok.Getter;
 import lombok.Setter;
 import sae.semestre.six.domain.billing.Billable;
-import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.inventory.Inventory;
+import sae.semestre.six.domain.patient.Patient;
 
-import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class Prescription implements Billable {
 
     @Transient
     public final static String BILLABLE_PREFIX = "PRESCRIPTION_";
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,7 +35,7 @@ public class Prescription implements Billable {
      */
     @Setter
     @Column(name = "prescription_number")
-    private String prescriptionNumber; 
+    private String prescriptionNumber;
 
     /**
      * The patient to whom the prescription belongs.
@@ -52,9 +51,9 @@ public class Prescription implements Billable {
     @Setter
     @ManyToMany
     @JoinTable(
-        name = "prescription_medicines",
-        joinColumns = @JoinColumn(name = "prescription_id"),
-        inverseJoinColumns = @JoinColumn(name = "inventory_id")
+            name = "prescription_medicines",
+            joinColumns = @JoinColumn(name = "prescription_id"),
+            inverseJoinColumns = @JoinColumn(name = "inventory_id")
     )
     private List<Inventory> medicines;
 
@@ -70,21 +69,21 @@ public class Prescription implements Billable {
      */
     @Setter
     @Column(name = "total_cost")
-    private Double totalCost; 
+    private Double totalCost;
 
     /**
      * Indicates if the prescription has been billed.
      */
     @Setter
     @Column(name = "is_billed")
-    private Boolean isBilled = false; 
+    private Boolean isBilled = false;
 
     /**
      * Indicates if the inventory has been updated for this prescription.
      */
     @Setter
     @Column(name = "inventory_updated")
-    private Boolean inventoryUpdated = false; 
+    private Boolean inventoryUpdated = false;
 
     /**
      * Date when the prescription was created.
@@ -103,16 +102,17 @@ public class Prescription implements Billable {
     /**
      * Default constructor for JPA.
      */
-    public Prescription() {}
+    public Prescription() {
+    }
 
     /**
      * Constructs a new Prescription with the given details.
      *
      * @param prescriptionId Unique prescription number
-     * @param patient The patient
-     * @param inventories List of prescribed medicines
-     * @param notes Additional notes
-     * @param cost Total cost
+     * @param patient        The patient
+     * @param inventories    List of prescribed medicines
+     * @param notes          Additional notes
+     * @param cost           Total cost
      */
     public Prescription(String prescriptionId, Patient patient, List<Inventory> inventories, String notes, double cost) {
         this.prescriptionNumber = prescriptionId;
@@ -146,6 +146,6 @@ public class Prescription implements Billable {
 
     @Override
     public String getBillableName() {
-        return "PRESCRIPTION_" + prescriptionNumber;
+        return Prescription.BILLABLE_PREFIX + prescriptionNumber;
     }
 }

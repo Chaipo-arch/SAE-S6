@@ -6,13 +6,13 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sae.semestre.six.domain.billing.medical_acts.MedicalAct;
-import sae.semestre.six.domain.billing.medical_acts.MedicalActDaoImpl;
+import sae.semestre.six.domain.billing.medical_acts.MedicalActDao;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.doctor.DoctorDao;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.domain.prescription.Prescription;
-import sae.semestre.six.domain.prescription.PrescriptionDaoImpl;
+import sae.semestre.six.domain.prescription.PrescriptionDao;
 import sae.semestre.six.file.FileHandler;
 import sae.semestre.six.mail.EmailService;
 
@@ -31,8 +31,8 @@ public class BillingService {
     private String BILLS_FOLDER;
 
     private final BillingSecurityService billingSecurityService;
-    private final MedicalActDaoImpl medicalActDao;
-    private final PrescriptionDaoImpl prescriptionDao;
+    private final MedicalActDao medicalActDao;
+    private final PrescriptionDao prescriptionDao;
     private final PatientDao patientDao;
     private final FileHandler fileHandler;
     private final BillDao billDao;
@@ -53,11 +53,12 @@ public class BillingService {
         Doctor doctor = doctorDao.findById(Long.parseLong(doctorId));
         this.processBill(patient, doctor, treatments);
     }
+
     /**
      * Génère une facture
      *
-     * @param patient  le patient ayant été pris en charge
-     * @param doctor   le doctor l'ayant pris en charge
+     * @param patient    le patient ayant été pris en charge
+     * @param doctor     le doctor l'ayant pris en charge
      * @param treatments les traitements prescrits pour cette facture
      */
     @Transactional
@@ -152,6 +153,7 @@ public class BillingService {
 
     /**
      * Vérifie l'intégrité du fichier de facture
+     *
      * @param billNumber le numéro de la facture
      * @return true si l'intégrité est préservée, false sinon
      */
@@ -171,13 +173,8 @@ public class BillingService {
         byte[] salt = format.parseHex(bill.getHashSalt());
         byte[] hash = format.parseHex(bill.getHash());
 
-        System.out.println("SALT : " + Arrays.toString(salt));
-        System.out.println("HASH : " + Arrays.toString(hash));
-
         // On vérifie l'intégrité
-        boolean verified = billingSecurityService.verify(fileContent, hash, salt);
-        System.out.println("VERIFIED : " + verified);
-        return verified;
+        return billingSecurityService.verify(fileContent, hash, salt);
     }
 
     /**
