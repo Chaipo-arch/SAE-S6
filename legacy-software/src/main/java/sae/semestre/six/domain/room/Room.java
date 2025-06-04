@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.room;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import sae.semestre.six.domain.appointment.Appointment;
@@ -10,8 +11,9 @@ import sae.semestre.six.exception.InvalidDataException;
 import java.util.Set;
 import java.util.HashSet;
 
-@Builder(builderClassName = "RoomBuilder")
+@Builder
 @Entity
+@AllArgsConstructor
 @Table(name = "rooms")
 public class Room {
 
@@ -43,6 +45,10 @@ public class Room {
     @Getter
     @Column(name = "current_patient_count")
     private Integer currentPatientCount = 0;
+
+    public Room(){
+
+    }
 
     public RoomAvailabilityInformation getAvailability() {
         return  new RoomAvailabilityInformation(roomNumber,
@@ -80,7 +86,4 @@ public class Room {
         return currentPatientCount < capacity && !isOccupied;
     }
 
-    public static class RoomBuilder {
-
-    }
 }
