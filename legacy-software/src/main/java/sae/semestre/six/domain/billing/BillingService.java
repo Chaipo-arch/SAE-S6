@@ -11,6 +11,7 @@ import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.doctor.DoctorDao;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.PatientDao;
+import sae.semestre.six.domain.prescription.Prescription;
 import sae.semestre.six.domain.prescription.PrescriptionDaoImpl;
 import sae.semestre.six.file.FileHandler;
 import sae.semestre.six.mail.EmailService;
@@ -38,6 +39,7 @@ public class BillingService {
     private final EmailService emailService;
     private final DoctorDao doctorDao;
 
+
     /**
      * Génère une facture
      *
@@ -47,9 +49,20 @@ public class BillingService {
      */
     @Transactional
     public void processBill(String patientId, String doctorId, String[] treatments) {
-        // On récupère le patient et le docteur concerné
         Patient patient = patientDao.findById(Long.parseLong(patientId));
         Doctor doctor = doctorDao.findById(Long.parseLong(doctorId));
+        this.processBill(patient, doctor, treatments);
+    }
+    /**
+     * Génère une facture
+     *
+     * @param patient  le patient ayant été pris en charge
+     * @param doctor   le doctor l'ayant pris en charge
+     * @param treatments les traitements prescrits pour cette facture
+     */
+    @Transactional
+    public void processBill(Patient patient, Doctor doctor, String[] treatments) {
+        // On récupère le patient et le docteur concerné
         List<Billable> items = findBillablesByName(treatments);
 
         // Initialise la facture
@@ -61,7 +74,10 @@ public class BillingService {
         bill.calculateTotal();
 
         // Récupère et écrit les informations dans la facture
-        String message = buildBillFileContents(bill, Long.parseLong(patientId), Long.parseLong(doctorId), treatments);
+        String message = buildBillFileContents(bill,
+                patient.getId(),
+                doctor.getId(),
+                treatments);
         File file = getFileForBillNumber(bill.getBillNumber());
         fileHandler.writeToFile(file.getAbsolutePath(), message);
 
@@ -220,11 +236,10 @@ public class BillingService {
      * @return le nom de l'élément facturable
      */
     private Billable findBillableByName(@NonNull String billableName) {
-        final String prescriptionBeginning = "PRESCRIPTION_";
-        boolean isPrescription = billableName.startsWith(prescriptionBeginning);
+        boolean isPrescription = billableName.startsWith(Prescription.BILLABLE_PREFIX);
 
         if (isPrescription) {
-            String prescriptionNumber = billableName.replace(prescriptionBeginning, "");
+            String prescriptionNumber = billableName.replace(Prescription.BILLABLE_PREFIX, "");
             return prescriptionDao.findByPrescriptionNumber(prescriptionNumber);
         } else {
             return medicalActDao.findByName(billableName);

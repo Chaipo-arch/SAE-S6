@@ -3,6 +3,8 @@ package sae.semestre.six.domain.prescription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sae.semestre.six.domain.doctor.Doctor;
+import sae.semestre.six.domain.doctor.DoctorDaoImpl;
 import sae.semestre.six.domain.inventory.Inventory;
 import sae.semestre.six.domain.inventory.InventoryDao;
 import sae.semestre.six.domain.patient.PatientDao;
@@ -13,6 +15,7 @@ import sae.semestre.six.file.FileHandler;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -28,6 +31,7 @@ public class PrescriptionService {
     private final PatientDao patientDao;
     private final PrescriptionDao prescriptionDao;
     private static final String AUDIT_FILE = "C:\\hospital\\prescriptions.log";
+    private final DoctorDaoImpl doctorDaoImpl;
 
     /**
      * Constructs a PrescriptionService with required dependencies.
@@ -40,15 +44,16 @@ public class PrescriptionService {
      */
     @Autowired
     public PrescriptionService(FileHandler fileHandler,
-                              InventoryDao inventoryDao,
-                              BillingService billingService,
-                              PatientDao patientDao,
-                              PrescriptionDao prescriptionDao) {
+                               InventoryDao inventoryDao,
+                               BillingService billingService,
+                               PatientDao patientDao,
+                               PrescriptionDao prescriptionDao, DoctorDaoImpl doctorDaoImpl) {
         this.fileHandler = fileHandler;
         this.inventoryDao = inventoryDao;
         this.billingService = billingService;
         this.patientDao = patientDao;
         this.prescriptionDao = prescriptionDao;
+        this.doctorDaoImpl = doctorDaoImpl;
     }
 
     /**
@@ -83,17 +88,23 @@ public class PrescriptionService {
             } catch (Exception e) {
                 return "Failed: patient not found for id " + dto.patientId();
             }
+
+            // On crée la prescription
             String prescriptionId = "RX" + prescriptionCounter;
             Prescription prescription = new Prescription(prescriptionId, patient, inventories, dto.notes(), cost);
             prescriptionDao.save(prescription);
+
+            // On renseigne la création dans le fichier d'audit
             fileHandler.writeToFile(AUDIT_FILE,
                     new Date() + " - " + prescriptionId + "\n");
 
-            billingService.processBill(
-                    dto.patientId(),
-                    "SYSTEM",
-                    new String[]{"PRESCRIPTION_" + prescriptionId}
-            );
+            // On crée la facture correspondante
+            Optional<Doctor> systemDoctor = doctorDaoImpl.findByDoctorNumber("SYSTEM");
+            systemDoctor.ifPresent(doctor -> billingService.processBill(
+                    patient,
+                    doctor,
+                    new String[]{Prescription.BILLABLE_PREFIX + prescriptionId}
+            ));
 
             for (Inventory inventory : inventories) {
                 inventory.setQuantity(inventory.getQuantity() - 1);

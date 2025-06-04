@@ -23,6 +23,9 @@ import java.util.List;
 @Getter
 @Table(name = "prescriptions")
 public class Prescription implements Billable {
+
+    @Transient
+    public final static String BILLABLE_PREFIX = "PRESCRIPTION_";
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
