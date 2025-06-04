@@ -2,7 +2,8 @@
 INSERT INTO doctors (doctor_number, first_name, last_name, specialization, phone_number, email, department) VALUES
 ('DR001', 'Pierre', 'Dubois', 'Cardiologie', '0123456789', 'pierre.dubois@hopital.fr', 'Cardiologie'),
 ('DR002', 'Marie', 'Laurent', 'Pédiatrie', '0123456790', 'marie.laurent@hopital.fr', 'Pédiatrie'),
-('DR003', 'Jean', 'Martin', 'Neurologie', '0123456791', 'jean.martin@hopital.fr', 'Neurologie');
+('DR003', 'Jean', 'Martin', 'Neurologie', '0123456791', 'jean.martin@hopital.fr', 'Neurologie'),
+('SYSTEM', 'Logiciel', 'System', 'None', '0000000000', 'system@hopital.fr', 'None');
 
 -- Insertion des patients
 INSERT INTO patients (patient_number, first_name, last_name, date_of_birth, gender, address, phone_number) VALUES
