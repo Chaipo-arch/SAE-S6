@@ -14,7 +14,7 @@ import java.util.Date;
  * La couverture fonctionne de cette manière :
  * Si couverture = 10% et maxCouverture = 1000
  * Si le billet médical est de 100 euros alors la couverture calculée est de 10 euros.
- * Si le billet excéde 10000, par exemple 100000 euros alors la couverture calculée est de 1000 euros.
+ * Si le billet excéde 1000, par exemple 100000 euros alors la couverture calculée est de 1000 euros.
  */
 @Entity
 @Table(name = "insurance")
