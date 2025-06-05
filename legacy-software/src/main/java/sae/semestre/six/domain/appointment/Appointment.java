@@ -18,6 +18,7 @@ import java.time.LocalTime;
 @Entity
 @Table(name = "appointments")
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class Appointment {
 
@@ -68,11 +69,6 @@ public class Appointment {
     @Getter
     @Column(name = "room_number")
     private String roomNumber;
-
-
-
-    public Appointment() {
-    }
 
     public void assignRoom(Room room) {
         if(room == null || this.room == room) return;
