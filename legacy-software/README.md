@@ -1,13 +1,8 @@
-- Attention à bien build et lancer l'application en Java 1.8
+- Attention à bien build et lancer l'application avec Java 21
 - `docker compose up` permet de lancer une base de données
-- Veuillez vérifier que les dossiers :  
-  C:\hospital, 
-  C:\hospital\billing 
-  existent
+- Veuillez vérifier que les dossiers :  `C:\hospital` et `C:\hospital\billing` existent
   
-- Veuillez vérifier que le fichier : 
-  legacy-software/src/main/resources/env.properties 
-  existe
+- Veuillez vérifier que le fichier `legacy-software/src/main/resources/env.properties` existe (un exemple peut être trouvé dans le dossier `resources`)
                                      
 
 ## Swagger
