@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.doctor;
 
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -68,8 +69,12 @@ public class DoctorController {
     }
 
     // Endpoint pour supprimer un docteur par son identifiant
+    @Transactional
     @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id) {
+    public ResponseEntity<?> deleteDoctor(@PathVariable Long id) {
         doctorDao.deleteById(id); // Méthode delete de GenericDao
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Doctor with ID " + id + " deleted successfully");
     }
 }
