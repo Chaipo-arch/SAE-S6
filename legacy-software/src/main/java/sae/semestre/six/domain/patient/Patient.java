@@ -95,8 +95,9 @@ public class Patient {
     }
 
     public void addAppointment(Appointment appointment) {
+        if(appointments.contains(appointment)) return;
         appointments.add(appointment);
-        appointment.setPatient(this);
+        appointment.addPatient(this);
     }
 
     public void updateWith(PatientInformation patientInformation) {

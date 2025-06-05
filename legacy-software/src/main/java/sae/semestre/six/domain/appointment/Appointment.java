@@ -12,6 +12,7 @@ import sae.semestre.six.domain.room.Room;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 
 @Entity
@@ -36,6 +37,7 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
+
     @Getter
     @Setter
     @ManyToOne
@@ -59,33 +61,46 @@ public class Appointment {
     @Column(name = "status")
     private String status;
 
+    @Getter
     @Column(name = "description")
     private String description;
 
-    @Setter
+    @Getter
     @Column(name = "room_number")
     private String roomNumber;
 
-    
+
+
     public Appointment() {
     }
 
-
-    public String getAppointmentNumber() {
-        return appointmentNumber;
+    public void assignRoom(Room room) {
+        if(room == null || this.room == room) return;
+        this.room = room;
+        this.roomNumber = room.getRoomNumber();
+        room.assignAppointment(this);
     }
 
-    public String getDescription() {
-        return description;
+    public void addPatient(Patient patient) {
+        if(patient ==  null || this.patient == patient) return;
+        this.patient = patient;
+        patient.addAppointment(this);
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void addDoctor(Doctor doctor) {
+        if(doctor == null || this.doctor == doctor) return;
+        this.doctor = doctor;
+        doctor.addAppointment(this);
     }
 
-
-    public String getStatus() {
-        return status;
+    public boolean isSameDate(LocalDateTime localDateTime) {
+        return appointmentDate.toLocalDate().equals(localDateTime.toLocalDate()) &&
+                appointmentDate.getHour() == localDateTime.getHour();
     }
+
+    public static boolean isWorkingHours(LocalTime time) {
+        return time.isBefore(LocalTime.of(9, 0)) || time.isAfter(LocalTime.of(17, 0));
+    }
+
 
 }

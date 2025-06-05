@@ -1,6 +1,7 @@
 package sae.semestre.six.domain.appointment;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sae.semestre.six.domain.doctor.DoctorDao;
 import sae.semestre.six.domain.doctor.Doctor;
@@ -21,22 +22,11 @@ import java.util.stream.IntStream;
 @RequestMapping("/scheduling")
 public class SchedulingController {
 
-    private final AppointmentDao appointmentDao;
-    private final DoctorDao doctorDao;
-    private final PatientDao patientDao;
-    private final EmailService emailService;
-    private final RoomDao roomDao;
+    private final AppointmentsService appointmentsService;
 
     public SchedulingController(
-            AppointmentDao appointmentDao,
-            DoctorDao doctorDao, PatientDao patientDao,
-            EmailService emailService,
-            RoomDao roomDao) {
-        this.appointmentDao = appointmentDao;
-        this.doctorDao = doctorDao;
-        this.patientDao = patientDao;
-        this.emailService = emailService;
-        this.roomDao = roomDao;
+            AppointmentsService appointmentsService) {
+        this.appointmentsService = appointmentsService;
     }
 
     @PostMapping("/appointment")
@@ -46,66 +36,15 @@ public class SchedulingController {
             @RequestParam Long roomId,
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime appointmentDateTime) {
-        // Vérifier la disponibilité du docteur
-        Doctor doctor = doctorDao.findById(doctorId);
-        Patient patient = patientDao.findById(patientId);
-        Room room = roomDao.findById(roomId);
-        List<Appointment> doctorAppointments = appointmentDao.findByDoctorId(doctorId);
-        boolean conflict = doctorAppointments.stream()
-                .anyMatch(existing -> existing.getAppointmentDate().toLocalDate().equals(appointmentDateTime.toLocalDate()) &&
-                        existing.getAppointmentDate().getHour() == appointmentDateTime.getHour());
-
-        if (conflict) {
-            return "Doctor is not available at this time";
-        }
-        if(doctor == null || patient == null) {
-            return "Doctor or patient not found";
-        }
-        if(room == null) {
-            return "Room not found";
-        }
-        if(!room.getAvailability().canAcceptPatient()){
-            return "Room is not available";
-        }
-
-        LocalTime time = appointmentDateTime.toLocalTime();
-        if (time.isBefore(LocalTime.of(9, 0)) || time.isAfter(LocalTime.of(17, 0))) {
-            return "Appointments only available between 9 AM and 5 PM";
-        }
-
-        Appointment appointment = new Appointment();
-        appointment.setAppointmentDate(appointmentDateTime);
-        appointment.setDoctor(doctor);
-        appointment.setPatient(patient);
-        appointment.setAppointmentNumber("APPT" + System.currentTimeMillis());
-        appointment.setStatus("SCHEDULED");
-        patient.getAppointments().add(appointment);
-
-        doctor.getAppointments().add(appointment);
-        appointmentDao.save(appointment);
-        // Envoyer un email de confirmation
-        emailService.sendEmail(
-                doctor.getEmail(),
-                "New Appointment Scheduled",
-                "You have a new appointment on " + appointmentDateTime
-        );
-
+        appointmentsService.create(doctorId,patientId,roomId,appointmentDateTime);
         return "Appointment scheduled successfully";
     }
 
     @GetMapping("/available-slots")
-    public List<LocalDateTime> getAvailableSlots(
+    public ResponseEntity<List<LocalDateTime>> getAvailableSlots(
             @RequestParam Long doctorId,
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-        List<Appointment> doctorAppsToday = appointmentDao.findByDoctorId(doctorId).stream()
-                .filter(app -> app.getAppointmentDate().toLocalDate().equals(date))
-                .toList();
-
-        return IntStream.rangeClosed(9, 17)
-                .mapToObj(hour -> LocalDateTime.of(date, LocalTime.of(hour, 0)))
-                .filter(slot -> doctorAppsToday.stream()
-                        .noneMatch(app -> app.getAppointmentDate().toLocalTime().equals(slot.toLocalTime())))
-                .collect(Collectors.toList());
+        return ResponseEntity.ok(appointmentsService.getAvailableSlots(doctorId,date));
     }
 }

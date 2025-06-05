@@ -40,12 +40,6 @@ public class SchedulingControllerIntegrationTest {
     private DoctorDao doctorDao;
 
     @Autowired
-    private PatientDao patientDao;
-
-    @Autowired
-    private RoomDao roomDao;
-
-    @Autowired
     private AppointmentDao appointmentDao;
 
     @PersistenceContext
@@ -149,8 +143,8 @@ public class SchedulingControllerIntegrationTest {
                         .param("roomId", room.getId().toString())
                         .param("appointmentDateTime", validAppointmentTime.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Doctor is not available at this time"));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Doctor is not available at this time")));
     }
 
     @Test
@@ -164,8 +158,8 @@ public class SchedulingControllerIntegrationTest {
                         .param("roomId", room.getId().toString())
                         .param("appointmentDateTime", earlyAppointment.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Appointments only available between 9 AM and 5 PM"));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Appointments only available between 9 AM and 5 PM")));
 
         // Essayer de planifier un rendez-vous à 18h (après les heures de travail)
         LocalDateTime lateAppointment = LocalDateTime.of(LocalDate.now(), LocalTime.of(18, 0));
@@ -176,8 +170,8 @@ public class SchedulingControllerIntegrationTest {
                         .param("roomId", room.getId().toString())
                         .param("appointmentDateTime", lateAppointment.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Appointments only available between 9 AM and 5 PM"));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Appointments only available between 9 AM and 5 PM")));
     }
 
     @Test
@@ -189,8 +183,8 @@ public class SchedulingControllerIntegrationTest {
                         .param("roomId", room.getId().toString())
                         .param("appointmentDateTime", validAppointmentTime.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Doctor or patient not found"));
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Doctor or patient not found")));
 
         // Test avec un patient qui n'existe pas
         mockMvc.perform(post("/scheduling/appointment")
@@ -199,8 +193,8 @@ public class SchedulingControllerIntegrationTest {
                         .param("roomId", room.getId().toString())
                         .param("appointmentDateTime", validAppointmentTime.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Doctor or patient not found"));
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Doctor or patient not found")));
 
         // Test avec une salle qui n'existe pas
         mockMvc.perform(post("/scheduling/appointment")
@@ -209,8 +203,8 @@ public class SchedulingControllerIntegrationTest {
                         .param("roomId", "99999")
                         .param("appointmentDateTime", validAppointmentTime.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Room not found"));
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(containsString("Room not found")));
     }
 
     @Test
@@ -232,8 +226,8 @@ public class SchedulingControllerIntegrationTest {
                         .param("roomId", room.getId().toString())
                         .param("appointmentDateTime", validAppointmentTime.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Room is not available"));
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Room is not available")));
     }
 
     @Test
