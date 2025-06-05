@@ -46,13 +46,13 @@ public class PatientController {
     /**
      * Endpoint DELETE pour supprimer un patient existant à partir de son identifiant.
      *
-     * @param id identifiant du patient à supprimer
+     * @param patientId identifiant du patient à supprimer
      * @return réponse HTTP confirmant la suppression ou indiquant que le patient n’existe pas
      */
     @Transactional
-    @DeleteMapping
-    public ResponseEntity<String> deletePatient(@RequestParam("id") Long id) {
-        Patient patient = patientDao.findById(id);
+    @DeleteMapping("/{patientId}")
+    public ResponseEntity<String> deletePatient(@PathVariable("patientId") Long patientId) {
+        Patient patient = patientDao.findById(patientId);
         if(patient == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The patient was not found");
         }
@@ -63,14 +63,14 @@ public class PatientController {
     /**
      * Endpoint POST pour mettre à jour les informations d’un patient existant.
      *
-     * @param id identifiant du patient à mettre à jour
+     * @param patientId identifiant du patient à mettre à jour
      * @param patientInformation nouvelles données du patient
      * @return réponse HTTP confirmant la mise à jour ou signalant une erreur (patient non trouvé)
      */
     @Transactional
-    @PostMapping("update/")
-    public ResponseEntity<String> updatePatient(@RequestParam("id") Long id, @RequestBody PatientInformation patientInformation) {
-        Patient patient = patientDao.findById(id);
+    @PostMapping("update/{patientId}")
+    public ResponseEntity<String> updatePatient(@PathVariable("patientId") Long patientId, @RequestBody PatientInformation patientInformation) {
+        Patient patient = patientDao.findById(patientId);
         if(patient == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The patient was not found");
         }
@@ -92,12 +92,12 @@ public class PatientController {
     /**
      * Endpoint GET pour récupérer un patient spécifique via son identifiant.
      *
-     * @param id identifiant du patient à consulter
+     * @param patientId identifiant du patient à consulter
      * @return objet Patient correspondant à l’identifiant fourni
      */
-    @GetMapping("s")
-    public ResponseEntity<Patient> getPatient(@RequestParam Long id) {
-        Patient patient = patientDao.findById(id);
+    @GetMapping("/{patientId}")
+    public ResponseEntity<Patient> getPatient(@PathVariable Long patientId) {
+        Patient patient = patientDao.findById(patientId);
         if(patient == null ) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }

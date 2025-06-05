@@ -244,8 +244,7 @@ public class SchedulingControllerIntegrationTest {
         appointmentDao.save(existing);
 
         // Récupérer les créneaux disponibles pour aujourd'hui
-        mockMvc.perform(get("/scheduling/available-slots")
-                        .param("doctorId", doctor.getId().toString())
+        mockMvc.perform(get("/scheduling/available-slots/" + doctor.getId())
                         .param("date", LocalDate.now().toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())
@@ -271,8 +270,7 @@ public class SchedulingControllerIntegrationTest {
 
         // Récupérer les créneaux disponibles pour demain (tous les créneaux devraient être disponibles)
         LocalDate tomorrow = LocalDate.now().plusDays(1);
-        mockMvc.perform(get("/scheduling/available-slots")
-                        .param("doctorId", doctor.getId().toString())
+        mockMvc.perform(get("/scheduling/available-slots/" + doctor.getId())
                         .param("date", tomorrow.toString())
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED))
                 .andExpect(status().isOk())

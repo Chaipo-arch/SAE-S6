@@ -40,9 +40,9 @@ public class SchedulingController {
         return "Appointment scheduled successfully";
     }
 
-    @GetMapping("/available-slots")
+    @GetMapping("/available-slots/{doctorId}")
     public ResponseEntity<List<LocalDateTime>> getAvailableSlots(
-            @RequestParam Long doctorId,
+            @PathVariable Long doctorId,
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(appointmentsService.getAvailableSlots(doctorId,date));

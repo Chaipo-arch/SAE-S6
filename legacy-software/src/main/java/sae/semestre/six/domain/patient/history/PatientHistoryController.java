@@ -56,8 +56,8 @@ public class PatientHistoryController {
      * @param idPrescription identifiant de l’ordonnance
      * @return réponse HTTP confirmant l’ajout de l’entrée
      */
-    @PostMapping("/entry")
-    public ResponseEntity<String> addHistoryEntry(@RequestParam Long idHistoryPatient,
+    @PostMapping("/entry/{idHistoryPatient}")
+    public ResponseEntity<String> addHistoryEntry(@PathVariable Long idHistoryPatient,
                                                   @RequestParam Long idTreatment,
                                                   @RequestParam Long idBill,
                                                   @RequestParam Long idLabResults,
@@ -73,7 +73,7 @@ public class PatientHistoryController {
      * @param patientId identifiant du patient
      * @return résumé contenant le nombre d’historiques et le total facturé
      */
-    @GetMapping("/patient/{patientId}/summary")
+    @GetMapping("/{patientId}/summary")
     public PatientSummary getPatientSummary(@PathVariable Long patientId) {
         return patientHistoryService.getPatientSummary(patientId);
     }
@@ -86,8 +86,8 @@ public class PatientHistoryController {
      * @return réponse HTTP confirmant la création de l’historique
      */
     @Transactional
-    @PostMapping
-    public ResponseEntity<String> createPatientHistory(@RequestParam Long idPatient,@RequestBody PatientHistoryInformation patientHistoryInformation) {
+    @PostMapping("/{idPatient}")
+    public ResponseEntity<String> createPatientHistory(@PathVariable Long idPatient,@RequestBody PatientHistoryInformation patientHistoryInformation) {
         patientHistoryService.createPatientHistory(idPatient,patientHistoryInformation);
         return ResponseEntity.status(HttpStatus.CREATED).body("Patient history created");
     }

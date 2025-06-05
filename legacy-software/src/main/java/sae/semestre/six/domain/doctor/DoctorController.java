@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/doctor")
-@CrossOrigin("*") // Ou spécifiez une origine spécifique
 public class DoctorController {
 
     private final DoctorDao doctorDao;

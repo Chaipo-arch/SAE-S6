@@ -100,7 +100,7 @@ public class InventoryController {
      * @param itemCode The unique item code
      * @return List of PriceHistoryDTOs or error message
      */
-    @GetMapping("/PriceHistory/{itemCode}")
+    @GetMapping("/price-history/{itemCode}")
     public ResponseEntity<?> getPriceHistory(@PathVariable String itemCode) {
         try {
             return ResponseEntity.ok(inventoryService.getPriceHistory(itemCode));

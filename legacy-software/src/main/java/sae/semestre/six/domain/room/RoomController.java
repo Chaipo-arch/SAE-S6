@@ -28,8 +28,8 @@ public class RoomController {
      * @param roomNumber Le numéro de la salle dans laquelle assigner le rendez-vous.
      * @return Une réponse HTTP indiquant le succès de l'opération.
      */
-    @PostMapping("/assign")
-    public ResponseEntity<String> assignAppointment(@RequestParam Long appointmentId, @RequestParam String roomNumber) {
+    @PostMapping("/assign/{appointmentId}")
+    public ResponseEntity<String> assignAppointment(@PathVariable Long appointmentId, @RequestParam String roomNumber) {
             roomService.assignAppointmentToRoom(appointmentId,roomNumber);
             return ResponseEntity.ok("Room assigned successfully");
 
@@ -41,8 +41,8 @@ public class RoomController {
      * @param roomNumber Le numéro de la salle dont on souhaite connaître la disponibilité.
      * @return Une réponse HTTP contenant les informations de disponibilité de la salle.
      */
-    @GetMapping("/availability")
-    public ResponseEntity<RoomAvailabilityInformation> getRoomAvailability(@RequestParam String roomNumber) {
+    @GetMapping("/availability/{roomNumber}")
+    public ResponseEntity<RoomAvailabilityInformation> getRoomAvailability(@PathVariable String roomNumber) {
         return ResponseEntity.ok(roomService.getRoomAvailability(roomNumber));
     }
 } 

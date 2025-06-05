@@ -333,7 +333,7 @@ public class TestInventoryController {
                 .andExpect(jsonPath("$.unitPrice").value(7.5))
                 .andExpect(jsonPath("$.reorderLevel").value(30));
         // Check price history was created
-        mockMvc.perform(get("/inventory/PriceHistory/TESTING001"))
+        mockMvc.perform(get("/inventory/price-history/TESTING001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].oldPrice").value(5.0))
                 .andExpect(jsonPath("$[0].newPrice").value(7.5));
@@ -371,7 +371,7 @@ public class TestInventoryController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(updateJson))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/inventory/PriceHistory/TESTING001"))
+        mockMvc.perform(get("/inventory/price-history/TESTING001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].oldPrice").value(5.0))
                 .andExpect(jsonPath("$[0].newPrice").value(8.0))

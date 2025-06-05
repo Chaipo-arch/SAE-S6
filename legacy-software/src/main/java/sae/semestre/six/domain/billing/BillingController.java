@@ -111,8 +111,8 @@ public class BillingController {
         return ResponseEntity.ok(billingService.getPendingBillsIds());
     }
 
-    @GetMapping("/integrity")
-    public ResponseEntity<Boolean> checkBillIntegrity(@NonNull @RequestParam String billNumber) {
+    @GetMapping("/integrity/{billNumber}")
+    public ResponseEntity<Boolean> checkBillIntegrity(@NonNull @PathVariable String billNumber) {
         return ResponseEntity.ok(billingService.checkBillIntegrity(billNumber));
     }
 } 
