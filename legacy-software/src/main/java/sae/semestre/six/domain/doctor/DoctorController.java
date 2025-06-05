@@ -37,10 +37,11 @@ public class DoctorController {
     // Endpoint pour rechercher un docteur par son numéro unique
     @GetMapping("/number/{doctorNumber}")
     public ResponseEntity<DoctorDTO> getDoctorByNumber(@PathVariable String doctorNumber) {
-        return doctorDao.findByDoctorNumber(doctorNumber)
-                .map(doctor -> new DoctorDTO(doctor))
-                .map(dto -> ResponseEntity.ok(dto))
-                .orElse(ResponseEntity.notFound().build());
+        Optional<DoctorDTO> doctorDTO = doctorService.getDoctorByNumber(doctorNumber);
+        if(doctorDTO.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(doctorDTO.get());
     }
 
 
@@ -54,9 +55,7 @@ public class DoctorController {
     // Endpoint pour rechercher des docteurs par département
     @GetMapping("/department/{department}")
     public List<DoctorDTO> getDoctorsByDepartment(@PathVariable String department) {
-        return doctorDao.findByDepartment(department).stream()
-                .map(doctor -> new DoctorDTO(doctor))
-                .collect(Collectors.toList());
+        return doctorService.getDoctorsByDepartment(department);
     }
 
 

@@ -14,7 +14,6 @@ import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.prescription.Prescription;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
