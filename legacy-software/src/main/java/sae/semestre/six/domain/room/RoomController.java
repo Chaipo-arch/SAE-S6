@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.room;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +29,7 @@ public class RoomController {
      * @param roomNumber Le numéro de la salle dans laquelle assigner le rendez-vous.
      * @return Une réponse HTTP indiquant le succès de l'opération.
      */
+    @Transactional
     @PostMapping("/assign/{appointmentId}")
     public ResponseEntity<String> assignAppointment(@PathVariable Long appointmentId, @RequestParam String roomNumber) {
             roomService.assignAppointmentToRoom(appointmentId,roomNumber);

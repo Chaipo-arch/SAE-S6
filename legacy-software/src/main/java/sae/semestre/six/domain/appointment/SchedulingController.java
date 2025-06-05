@@ -1,5 +1,6 @@
 package sae.semestre.six.domain.appointment;
 
+import jakarta.transaction.Transactional;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,7 @@ public class SchedulingController {
         this.appointmentsService = appointmentsService;
     }
 
+    @Transactional
     @PostMapping("/appointment")
     public String scheduleAppointment(
             @RequestParam Long doctorId,
