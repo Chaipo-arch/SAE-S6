@@ -15,6 +15,7 @@ public interface PrescriptionDao extends GenericDao<Prescription, Long> {
      * @return List of Prescription entities for the patient
      */
     List<Prescription> findByPatientId(Long patientId);
+    Prescription findByPrescriptionNumber(String prescriptionNumber);
 
     /**
      * Finds a prescription by its prescription number.

@@ -24,6 +24,14 @@ public class PrescriptionDaoImpl extends AbstractHibernateDao<Prescription, Long
                 .getResultList();
     }
 
+    @Override
+    public Prescription findByPrescriptionNumber(String prescriptionNumber) {
+        return (Prescription) getEntityManager()
+                .createQuery("FROM Prescription WHERE prescriptionNumber = :number")
+                .setParameter("number", prescriptionNumber)
+                .getSingleResult();
+    }
+
     /**
      * Finds a prescription by its prescription number.
      *

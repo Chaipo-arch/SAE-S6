@@ -13,7 +13,6 @@ public class GmailService implements EmailService {
     private final MailSender mailSender;
 
     public GmailService() {
-
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost("smtp.gmail.com");
         sender.setPort(587);

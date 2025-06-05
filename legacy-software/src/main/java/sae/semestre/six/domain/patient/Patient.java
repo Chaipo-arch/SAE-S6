@@ -29,6 +29,8 @@ public class Patient {
 
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9.]{1,}@[a-zA-Z]{1,}\\.[a-zA-Z]{1,3}$";
 
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -69,10 +71,6 @@ public class Patient {
 
 
     public Patient() {
-    }
-
-    public Long getId() {
-        return id;
     }
 
     private static boolean isExistingGender(String gender) {

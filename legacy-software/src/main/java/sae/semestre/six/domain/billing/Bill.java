@@ -1,123 +1,130 @@
 package sae.semestre.six.domain.billing;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import org.hibernate.Hibernate;
+import jakarta.persistence.*;
+import lombok.*;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.history.PatientHistory;
 
-import jakarta.persistence.*;
-
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+/**
+ * Représente une facture
+ */
 @Entity
 @Table(name = "bills")
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class Bill {
-    
+
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
+    @Getter
+    @Setter
     @Column(name = "bill_number", unique = true)
     private String billNumber;
-    
+
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "patient_id")
     private Patient patient;
-    
+
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "doctor_id")
     private Doctor doctor;
-    
+
+    @Getter
+    @Setter
     @Column(name = "bill_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date billDate = new Date();
-    
+
+    @Getter
+    @Setter
     @Column(name = "total_amount")
-    private double totalAmount = 0.0;
-    
+    private Double totalAmount = 0.0;
+
     @Column(name = "status")
-    private String status = "PENDING";
-    
+    @Convert(converter = BillStatusConverter.class)
+    private BillStatus status = BillStatus.PENDING;
+
+    @Getter
     @OneToMany(mappedBy = "bill", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<BillDetail> billDetails = new HashSet<>();
-    
-    
+
     @Column(name = "created_date")
     private Date createdDate = new Date();
-    
+
     @Column(name = "last_modified")
     private Date lastModified = new Date();
 
+    @Getter
+    @Setter
     @ManyToOne
     private PatientHistory patientHistory;
-    
-    public Bill() {
 
-    }
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    
-    public String getBillNumber() { return billNumber; }
+    @Getter
+    @Setter
+    private String hashSalt;
 
-    public void setBillDate(Date billDate) {
-        this.billDate = billDate;
-    }
+    @Getter
+    @Setter
+    private String hash;
 
-    public void setBillNumber(String billNumber) { this.billNumber = billNumber; }
-    
-    public Patient getPatient() { return patient; }
-    public void setPatient(Patient patient) { this.patient = patient; }
-    
-    public Doctor getDoctor() { return doctor; }
-    public void setDoctor(Doctor doctor) { this.doctor = doctor; }
-    
-    public Date getBillDate() { return billDate; }
-
-    public Double getTotalAmount() { return totalAmount; }
-    public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
-    
-    public void setStatus(String status) {
+    public void setStatus(BillStatus status) {
         this.status = status;
-        this.lastModified = new Date(); 
+        this.lastModified = new Date();
     }
-    
-    public Set<BillDetail> getBillDetails() { return billDetails; }
-    public void setBillDetails(Set<BillDetail> billDetails) { this.billDetails = billDetails; }
 
-    public void calculateCost(Map<String, Double> priceList, String[] treatments) {
-        double total = 0.0;
+    /**
+     * Ajoute les détails de la facture
+     * @param billables les billables de la facture
+     */
+    public void setBillDetails(List<Billable> billables) {
         Set<BillDetail> details = new HashSet<>();
-
-        for (String treatment : treatments) {
-            double price = priceList.get(treatment);
-            total += price;
-
+        for (Billable billable : billables) {
             BillDetail detail = new BillDetail();
             detail.setBill(this);
-            detail.setTreatmentName(treatment);
-            detail.setUnitPrice(price);
+            detail.setTreatmentName(billable.getBillableName());
+            detail.setUnitPrice(billable.getBillableAmount());
             details.add(detail);
-
-            //Hibernate.initialize(detail); //TODO : vérifier utilité
         }
-
-        if (total > 500) {
-            total = total * 0.9;
-        }
-
-        this.setTotalAmount(total);
         this.setBillDetails(details);
     }
 
+    /**
+     * @param details les détails de la facture
+     */
+    public void setBillDetails(Set<BillDetail> details) {
+        this.billDetails = details;
+    }
 
-    public void setPatientHistory(PatientHistory patientHistory) {
-        this.patientHistory = patientHistory;
+    /**
+     * Calcule et remplit le total de la facture
+     */
+    public void calculateTotal() {
+        final double TAUX_REDUCTION = 0.9;
+        final double SEUIL_REDUCTION = 500.0;
+        double total = 0.0;
+
+        for (BillDetail item : this.getBillDetails()) {
+            total += item.getLineTotal();
+        }
+
+        if (total > SEUIL_REDUCTION) {
+            total = total * TAUX_REDUCTION;
+        }
+        this.setTotalAmount(total);
     }
 }

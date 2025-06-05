@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import sae.semestre.six.domain.appointment.Appointment;
 import sae.semestre.six.domain.billing.Bill;
+import sae.semestre.six.domain.billing.BillStatus;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.prescription.Prescription;
@@ -123,7 +124,7 @@ public class PatientHistoryDaoTest {
                 .status("CONFIRMÉ").appointmentDate(LocalDateTime.now()).build();
         Bill bill = Bill.builder().billNumber("Bil011")
                 .patientHistory(patientHistory).patient(testPatient)
-                .totalAmount(10.0).status("EN ATTENTE").createdDate(new Date()).build();
+                .totalAmount(10.0).status(BillStatus.PENDING).createdDate(new Date()).build();
         entityManager.persist(patientHistory);
         entityManager.persist(doctor);
         entityManager.persist(appointment);

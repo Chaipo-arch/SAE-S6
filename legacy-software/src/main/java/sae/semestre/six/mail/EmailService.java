@@ -1,5 +1,8 @@
 package sae.semestre.six.mail;
 
+import org.springframework.stereotype.Service;
+
+@Service
 public interface EmailService {
 
     public enum EMAIL_SOURCE {
@@ -7,21 +10,11 @@ public interface EmailService {
         ADMIN,
         HOSPITAL;
         public String getEmail() {
-            String email = "";
-            switch (this) {
-                case ADMIN:
-                    email = "admin@hospital.com";
-                    break;
-                case SUPPLIER:
-                    email = "supplier@example.com";
-                    break;
-                case HOSPITAL:
-                    email = "hospital.system@gmail.com";
-                    break;
-                default:
-                    throw new RuntimeException("The email can't be provided.");
-            }
-            return email;
+            return switch (this) {
+                case ADMIN -> "admin@hospital.com";
+                case SUPPLIER -> "supplier@example.com";
+                case HOSPITAL -> "hospital.system@gmail.com";
+            };
         }
     }
 

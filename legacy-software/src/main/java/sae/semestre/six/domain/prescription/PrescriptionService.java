@@ -1,18 +1,22 @@
 package sae.semestre.six.domain.prescription;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sae.semestre.six.domain.billing.BillingService;
+import sae.semestre.six.domain.doctor.Doctor;
+import sae.semestre.six.domain.doctor.DoctorDao;
 import sae.semestre.six.domain.inventory.Inventory;
 import sae.semestre.six.domain.inventory.InventoryDao;
-import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.domain.patient.Patient;
-import sae.semestre.six.domain.billing.BillingService;
+import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.file.FileHandler;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -20,36 +24,18 @@ import java.util.stream.Collectors;
  * retrieving patient prescriptions, and calculating prescription costs.
  */
 @Service
+@RequiredArgsConstructor
 public class PrescriptionService {
 
-    private final FileHandler fileHandler;
     private final InventoryDao inventoryDao;
-    private final BillingService billingService;
-    private final PatientDao patientDao;
     private final PrescriptionDao prescriptionDao;
-    private static final String AUDIT_FILE = "C:\\hospital\\prescriptions.log";
+    private final PatientDao patientDao;
+    private final DoctorDao doctorDao;
+    private final FileHandler fileHandler;
+    private final BillingService billingService;
 
-    /**
-     * Constructs a PrescriptionService with required dependencies.
-     *
-     * @param fileHandler      File handler for audit logging
-     * @param inventoryDao     DAO for inventory operations
-     * @param billingService   Service for billing operations
-     * @param patientDao       DAO for patient operations
-     * @param prescriptionDao  DAO for prescription operations
-     */
-    @Autowired
-    public PrescriptionService(FileHandler fileHandler,
-                              InventoryDao inventoryDao,
-                              BillingService billingService,
-                              PatientDao patientDao,
-                              PrescriptionDao prescriptionDao) {
-        this.fileHandler = fileHandler;
-        this.inventoryDao = inventoryDao;
-        this.billingService = billingService;
-        this.patientDao = patientDao;
-        this.prescriptionDao = prescriptionDao;
-    }
+    @Value("${sae.semestre.six.files.prescriptions}")
+    private String AUDIT_FILE;
 
     /**
      * Adds a new prescription for a patient, updates inventory, logs the action, and processes billing.
@@ -83,17 +69,23 @@ public class PrescriptionService {
             } catch (Exception e) {
                 return "Failed: patient not found for id " + dto.patientId();
             }
+
+            // On crée la prescription
             String prescriptionId = "RX" + prescriptionCounter;
             Prescription prescription = new Prescription(prescriptionId, patient, inventories, dto.notes(), cost);
             prescriptionDao.save(prescription);
+
+            // On renseigne la création dans le fichier d'audit
             fileHandler.writeToFile(AUDIT_FILE,
                     new Date() + " - " + prescriptionId + "\n");
 
-            billingService.processBill(
-                    dto.patientId(),
-                    "SYSTEM",
-                    new String[]{"PRESCRIPTION_" + prescriptionId}
-            );
+            // On crée la facture correspondante
+            Optional<Doctor> systemDoctor = doctorDao.findByDoctorNumber("SYSTEM");
+            systemDoctor.ifPresent(doctor -> billingService.processBill(
+                    patient,
+                    doctor,
+                    new String[]{Prescription.BILLABLE_PREFIX + prescriptionId}
+            ));
 
             for (Inventory inventory : inventories) {
                 inventory.setQuantity(inventory.getQuantity() - 1);

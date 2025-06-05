@@ -46,7 +46,7 @@ public class BillDaoImpl extends AbstractHibernateDao<Bill, Long> implements Bil
     
     @Override
     @SuppressWarnings("unchecked")
-    public List<Bill> findByStatus(String status) {
+    public List<Bill> findByStatus(BillStatus status) {
         return getEntityManager()
                 .createQuery("FROM Bill WHERE status = :status")
                 .setParameter("status", status)
@@ -55,10 +55,8 @@ public class BillDaoImpl extends AbstractHibernateDao<Bill, Long> implements Bil
 
     @Override
     public double getTotalCost() {
-        double total = 0;
-        for(Bill bill : findAll()) {
-            total += bill.getTotalAmount();
-        }
-        return total;
+        return getEntityManager()
+                .createQuery("SELECT SUM(totalAmount) FROM Bill")
+                .getFirstResult();
     }
 } 
