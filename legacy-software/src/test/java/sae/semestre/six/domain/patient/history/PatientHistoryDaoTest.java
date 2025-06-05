@@ -14,6 +14,7 @@ import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.prescription.Prescription;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Date;
@@ -109,7 +110,6 @@ public class PatientHistoryDaoTest {
 
     @Test
     void testFindDataForHistoryEntry() {
-        LocalDateTime localDate = LocalDate.now().atTime(10,0);
         PatientHistory patientHistory = new PatientHistoryInformation(new Date(),
                 "Diagnosis","Symptoms","Notes").toPatientHistory(testPatient);
         entityManager.persist(patientHistory);

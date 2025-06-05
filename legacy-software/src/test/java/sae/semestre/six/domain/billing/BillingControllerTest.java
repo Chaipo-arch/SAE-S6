@@ -208,7 +208,9 @@ class BillingControllerTest {
      * @return les noms des fichiers de factures dans le dossier correspondant
      */
     private List<String> getNamesOfBillFiles() {
-        String[] contentsList = Objects.requireNonNull(getBillsFolder().list());
+        String[] files = getBillsFolder().list();
+        assertNotNull(files, "Le dossier C:\\hospital\\billing n'est pas créé.");
+        String[] contentsList = Objects.requireNonNull(files);
         return new ArrayList<>(Arrays.asList(contentsList));
     }
 }

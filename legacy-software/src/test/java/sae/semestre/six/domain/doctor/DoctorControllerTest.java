@@ -27,8 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 public class DoctorControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
 
     @Mock
     private DoctorDao doctorDao;

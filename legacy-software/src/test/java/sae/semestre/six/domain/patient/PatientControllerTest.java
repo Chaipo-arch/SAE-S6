@@ -71,7 +71,7 @@ public class PatientControllerTest {
         mockMvc.perform(post("/patient")
                         .contentType("application/json")
                       .content(objectMapper.writeValueAsString(patientInformationCorrect)))
-              .andExpect(status().isOk());
+              .andExpect(status().isCreated());
 
         mockMvc.perform(post("/patient")
                         .contentType("application/json")

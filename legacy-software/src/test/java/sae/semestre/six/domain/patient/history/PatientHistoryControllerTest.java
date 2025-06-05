@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.exception.InvalidDataException;
+import sae.semestre.six.exception.ResourceNotFoundException;
 
 import java.time.LocalDate;
 import java.util.Calendar;
@@ -52,7 +53,7 @@ public class PatientHistoryControllerTest {
 
     @Test
     void testCreateHistoryBadId() {
-        assertThrows(InvalidDataException.class, () ->patientHistoryController.createPatientHistory(0L,
+        assertThrows(ResourceNotFoundException.class, () ->patientHistoryController.createPatientHistory(0L,
                 new PatientHistoryInformation(new Date(),"diagnosis","symptons","notes")));
     }
 
