@@ -55,8 +55,12 @@ public class BillDaoImpl extends AbstractHibernateDao<Bill, Long> implements Bil
 
     @Override
     public double getTotalCost() {
-        return getEntityManager()
+        Object total = getEntityManager()
                 .createQuery("SELECT SUM(totalAmount) FROM Bill")
-                .getFirstResult();
+                .getSingleResult();
+        if (total == null) {
+            return 0;
+        }
+        return (double) total;
     }
 } 
