@@ -1,5 +1,6 @@
 package sae.semestre.six.mail;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -12,6 +13,8 @@ public class GmailService implements EmailService {
 
     private final MailSender mailSender;
 
+    /* Ne pas enlever l'autowired car Spring doit utiliser ce constructeur par défaut */
+    @Autowired
     public GmailService() {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost("smtp.gmail.com");
