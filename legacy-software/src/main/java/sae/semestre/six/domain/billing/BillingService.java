@@ -269,6 +269,7 @@ public class BillingService {
         StringBuilder billDetailsBuilder = new StringBuilder(billDetails);
         for (String treatment : treatments) {
             double price = medicalActDao.findPriceByName(treatment);
+            total += price;
             billDetailsBuilder.append(treatment).append(": $").append(price).append("\n");
         }
         billDetails = billDetailsBuilder.toString();
