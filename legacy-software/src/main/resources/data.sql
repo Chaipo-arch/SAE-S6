@@ -6,10 +6,10 @@ INSERT INTO doctors (doctor_number, first_name, last_name, specialization, phone
 ('SYSTEM', 'Logiciel', 'System', 'None', '0000000000', 'system@hopital.fr', 'None');
 
 -- Insertion des patients
-INSERT INTO patients (patient_number, first_name, last_name, date_of_birth, gender, address, phone_number) VALUES
-('PT001', 'Sophie', 'Moreau', '1985-06-15', 'F', '12 rue des Lilas, Paris', '0687654321'),
-('PT002', 'Lucas', 'Bernard', '1990-03-22', 'M', '45 avenue Victor Hugo, Lyon', '0687654322'),
-('PT003', 'Emma', 'Petit', '1978-11-30', 'F', '8 rue de la Paix, Marseille', '0687654323');
+INSERT INTO patients (patient_number, first_name, last_name, date_of_birth, gender, address, phone_number, email) VALUES
+('PT001', 'Sophie', 'Moreau', '1985-06-15', 'F', '12 rue des Lilas, Paris', '0687654321', 'aaa.aaa@aaa.fr'),
+('PT002', 'Lucas', 'Bernard', '1990-03-22', 'M', '45 avenue Victor Hugo, Lyon', '0687654322', 'bbb.bbb@bbb.fr'),
+('PT003', 'Emma', 'Petit', '1978-11-30', 'F', '8 rue de la Paix, Marseille', '0687654323', 'ccc.ccc@ccc.fr');
 
 -- Insertion des rendez-vous
 INSERT INTO appointments (appointment_number, patient_id, doctor_id, appointment_date, status, description, room_number) VALUES
@@ -47,12 +47,6 @@ INSERT INTO treatments (name, patient_history_id, treatment_date, notes) VALUES
 ('Traitement antihypertenseur', 1, '2024-02-15', 'Suivi mensuel'),
 ('Antibiothérapie', 2, '2024-02-15', 'Traitement sur 7 jours'),
 ('Traitement antimigraineux', 3, '2024-02-15', 'Traitement préventif quotidien');
-
--- Insertion des ordonnances
-INSERT INTO prescriptions (prescription_number, patient_id, medicines, notes, total_cost, is_billed, inventory_updated) VALUES
-('ORD001', 1, 'Bétabloquant 50mg, Aspirine 100mg', 'Prendre matin et soir', 45.60, true, true),
-('ORD002', 2, 'Paracétamol 500mg, Vitamine C', 'Prendre si fièvre', 22.30, true, true),
-('ORD003', 3, 'Sumatriptan 50mg', 'Prendre dès les premiers symptômes', 35.80, true, true);
 
 -- Insertion des factures
 INSERT INTO bills (bill_number, patient_id, doctor_id, bill_date, total_amount, status) VALUES
