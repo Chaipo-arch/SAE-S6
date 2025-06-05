@@ -1,8 +1,7 @@
 package sae.semestre.six.domain.appointment;
 
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import sae.semestre.six.domain.doctor.Doctor;
 import sae.semestre.six.domain.doctor.DoctorDao;
 import sae.semestre.six.domain.patient.Patient;
@@ -21,21 +20,15 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Service
-public class AppointmentsService {
+@AllArgsConstructor
+public class AppointmentService {
 
     private final AppointmentDao appointmentDao;
     private final RoomDao roomDao;
-    private DoctorDao doctorDao;
+    private final DoctorDao doctorDao;
     private final PatientDao patientDao;
     private final EmailService emailService;
 
-    public AppointmentsService(AppointmentDao appointmentDao , RoomDao roomDao, DoctorDao doctorDao, PatientDao patientDao, EmailService emailService) {
-        this.appointmentDao = appointmentDao;
-        this.roomDao = roomDao;
-        this.doctorDao = doctorDao;
-        this.patientDao = patientDao;
-        this.emailService = emailService;
-    }
     public void assignRoom(Long appointmentId, String roomNumber) {
         roomDao.findByRoomNumber(roomNumber).assignAppointment(appointmentDao.findById(appointmentId));
 

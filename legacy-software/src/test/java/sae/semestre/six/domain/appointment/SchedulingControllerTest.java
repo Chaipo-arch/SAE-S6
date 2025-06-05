@@ -12,7 +12,6 @@ import sae.semestre.six.domain.patient.Patient;
 import sae.semestre.six.domain.patient.PatientDao;
 import sae.semestre.six.domain.room.RoomDao;
 import sae.semestre.six.exception.InvalidDataException;
-import sae.semestre.six.exception.ResourceNotFoundException;
 import sae.semestre.six.mail.EmailService;
 
 import java.time.LocalDate;
@@ -40,7 +39,7 @@ class SchedulingControllerTest {
     private EmailService emailService;
 
     @InjectMocks
-    private AppointmentsService appointmentsService;
+    private AppointmentService appointmentsService;
 
     private SchedulingController controller;
 
