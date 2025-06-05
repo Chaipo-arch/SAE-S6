@@ -1,6 +1,7 @@
 package sae.semestre.six.domain.patient.history;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sae.semestre.six.domain.appointment.Appointment;
@@ -22,7 +23,7 @@ public class LabResultController {
         LabResult labResult = labResultInformation.toLabResult();
 
         labResultDao.save(labResult);
-        return ResponseEntity.ok("Lab result created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Lab result created");
     }
 
 

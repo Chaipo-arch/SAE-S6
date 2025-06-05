@@ -2,6 +2,7 @@ package sae.semestre.six.domain.patient;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sae.semestre.six.domain.appointment.Appointment;
@@ -39,7 +40,7 @@ public class PatientController {
         }
 
         patientDao.save(patient);
-        return ResponseEntity.ok("Patient created");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Patient created");
     }
 
     /**
@@ -53,7 +54,7 @@ public class PatientController {
     public ResponseEntity<String> deletePatient(@RequestParam("id") Long id) {
         Patient patient = patientDao.findById(id);
         if(patient == null) {
-            return ResponseEntity.badRequest( ).body("No patient has the id " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The patient was not found");
         }
         patientDao.delete(patient);
         return ResponseEntity.ok("Patient removed");
@@ -71,7 +72,7 @@ public class PatientController {
     public ResponseEntity<String> updatePatient(@RequestParam("id") Long id, @RequestBody PatientInformation patientInformation) {
         Patient patient = patientDao.findById(id);
         if(patient == null) {
-            return ResponseEntity.badRequest( ).body("No patient has the id " + id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("The patient was not found");
         }
         patient.updateWith(patientInformation);
         patientDao.update(patient);
@@ -97,6 +98,9 @@ public class PatientController {
     @GetMapping("s")
     public ResponseEntity<Patient> getPatient(@RequestParam Long id) {
         Patient patient = patientDao.findById(id);
+        if(patient == null ) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
         return ResponseEntity.ok(patient);
     }
 
